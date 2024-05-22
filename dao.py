@@ -51,7 +51,7 @@ class DataBaseActions:
                         Userid NUMBER PRIMARY KEY,
                         Password VARCHAR2(32), 
                         IdLider CHAR(14) UNIQUE,
-                        CONSTRAINT FK_USERS FOREIGN KEY (IdLider) REFERENCES Lider(CPI)
+                        CONSTRAINT FK_USERS_TABLE FOREIGN KEY (IdLider) REFERENCES Lider(CPI)
                     )
                 """)
                 print("Tabela USERS criada com sucesso!")
