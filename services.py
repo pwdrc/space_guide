@@ -11,5 +11,5 @@ class SpaceGuideServices:
     def init_environment(self):
         print(f"Configurando a base de dados...")
         self.service.create_table_users()
-        self.service.create_table_log_table()
+        self.service.create_log_table()
         

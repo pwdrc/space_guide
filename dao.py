@@ -6,10 +6,12 @@ import oracledb
 
 class DataBaseActions:
     def __init__(self):
+        self.config = AccessConfig()
+        self.config.get_db_credentials()
         self.connection = oracledb.connect(
-            user=AccessConfig.ORACLE_USER,
-            password=AccessConfig.ORACLE_PASSWORD,
-            dsn=AccessConfig.ORACLE_DSN
+            user=self.config.ORACLE_USER,
+            password=self.config.ORACLE_PASSWORD,
+            dsn=self.config.ORACLE_DSN
         )
         self.create_table_users()
         self.create_log_table()
