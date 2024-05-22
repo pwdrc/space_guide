@@ -44,43 +44,49 @@ class DataBaseActions:
         # se existir, informar que a tabela ja existe
         # usar a funcao md5 do SGBD para armazenar os dados
         # MD5 hash tem 32 caracteres hexadecimais
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute("""
-                    CREATE TABLE USERS (
-                        Userid NUMBER PRIMARY KEY,
-                        Password VARCHAR2(32), 
-                        IdLider CHAR(14) UNIQUE,
-                        CONSTRAINT FK_USERS_TABLE_SG FOREIGN KEY (IdLider) REFERENCES Lider(CPI) ON DELETE CASCADE
-                    )
-                """)
-                print("Tabela USERS criada com sucesso!")
-                
-                try:
-                    print("Preenchendo tabela USERS...")
-                    self.fill_table_users()
-                    print("Tabela USERS preenchida com sucesso!")
-                except oracledb.DatabaseError as e:
-                    print(f"Falha no preenchimento da tabela USERS: {e.args[0].message}")                    
-        except oracledb.DatabaseError as e:
-            print(f"Falha na criação da USERS (tabela): {e.args[0].message}")
+        if not self.table_exists('USERS'):
+            try:
+                with self.connection.cursor() as cursor:
+                    cursor.execute("""
+                        CREATE TABLE USERS (
+                            Userid NUMBER PRIMARY KEY,
+                            Password VARCHAR2(32), 
+                            IdLider CHAR(14) UNIQUE,
+                            CONSTRAINT FK_USERS_TABLE_SG FOREIGN KEY (IdLider) REFERENCES Lider(CPI) ON DELETE CASCADE
+                        )
+                    """)
+                    print("Tabela USERS criada com sucesso!")
+
+                    try:
+                        print("Preenchendo tabela USERS...")
+                        self.fill_table_users()
+                        print("Tabela USERS preenchida com sucesso!")
+                    except oracledb.DatabaseError as e:
+                        print(f"Falha no preenchimento da tabela USERS: {e.args[0].message}")                    
+            except oracledb.DatabaseError as e:
+                print(f"Falha na criação da USERS (tabela): {e.args[0].message}")
+        else:
+            print("Tabela USERS já existe! Continuando...")
 
     def create_log_table(self):
         # se a tabela ainda nao existir, criar
         # se existir, informar que a tabela ja existe
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute("""
-                    CREATE TABLE LOG_TABLE (
-                        Userid NUMBER,
-                        Timestamp TIMESTAMP,
-                        Message VARCHAR2(255),
-                        CONSTRAINT FK_LOG_TABLE_SG FOREIGN KEY (Userid) REFERENCES USERS(Userid) ON DELETE CASCADE
-                    )
-                """)
-                print("Tabela LOG_TABLE criada com sucesso!")
-        except oracledb.DatabaseError as e:
-            print(f"Falha na criação da LOG_TABLE: {e.args[0].message}")
+        if not self.table_exists('LOG_TABLE'):
+            try:
+                with self.connection.cursor() as cursor:
+                    cursor.execute("""
+                        CREATE TABLE LOG_TABLE (
+                            Userid NUMBER,
+                            Timestamp TIMESTAMP,
+                            Message VARCHAR2(255),
+                            CONSTRAINT FK_LOG_TABLE_SG FOREIGN KEY (Userid) REFERENCES USERS(Userid) ON DELETE CASCADE
+                        )
+                    """)
+                    print("Tabela LOG_TABLE criada com sucesso!")
+            except oracledb.DatabaseError as e:
+                print(f"Falha na criação da LOG_TABLE: {e.args[0].message}")
+        else:
+            print("Tabela LOG_TABLE já existe! Continuando...")
     
     def insert_log(self, user_id, message):
         with self.connection.cursor() as cursor:
@@ -89,6 +95,16 @@ class DataBaseActions:
                 VALUES (:user_id, SYSTIMESTAMP, :message)
             """, user_id=user_id, message=message)
             print("Log inserido com sucesso!")
+    
+    def table_exists(self, table_name):
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM USER_TABLES
+                WHERE TABLE_NAME = UPPER(:table_name)
+            """, {'table_name': table_name})
+            result = cursor.fetchone()
+            return result[0] > 0
 
     def select(self, sql):
         with self.connection.cursor() as cursor:
