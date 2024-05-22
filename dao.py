@@ -33,7 +33,7 @@ class DataBaseActions:
         with self.connection.cursor() as cursor:
             cursor.execute("""
                 INSERT INTO USERS (Userid, Password, IdLider)
-                SELECT DBMS_RANDOM.VALUE(1000, 9999), MD5('123456'), Lider.CPI
+                SELECT DBMS_RANDOM.VALUE(1000, 9999), standard_hash('123456', 'MD5'), Lider.CPI
                 FROM Lider
                 WHERE Lider.CPI NOT IN (SELECT IdLider FROM USERS)
             """)
@@ -51,12 +51,18 @@ class DataBaseActions:
                         Userid NUMBER PRIMARY KEY,
                         Password VARCHAR2(32), 
                         IdLider CHAR(14) UNIQUE,
-                        CONSTRAINT FK_USERS_TABLE FOREIGN KEY (IdLider) REFERENCES Lider(CPI)
+                        CONSTRAINT FK_USERS_TABLE FOREIGN KEY (IdLider) REFERENCES Lider(CPI) ON DELETE CASCADE
                     )
                 """)
                 print("Tabela USERS criada com sucesso!")
-                print("Preenchendo tabela USERS...")
-                self.fill_table_users()
+                
+                try:
+                    print("Preenchendo tabela USERS...")
+                    self.fill_table_users()
+                    print("Tabela USERS preenchida com sucesso!")
+                except oracledb.DatabaseError as e:
+                    print("Falha no preenchimento da tabela:", e.args[0].message)
+                    
         except oracledb.DatabaseError as e:
             print("Falha na criação da tabela:", e.args[0].message)
 
@@ -70,7 +76,7 @@ class DataBaseActions:
                         Userid NUMBER,
                         Timestamp TIMESTAMP,
                         Message VARCHAR2(255),
-                        CONSTRAINT FK_LOG_TABLE FOREIGN KEY (Userid) REFERENCES USERS(Userid)
+                        CONSTRAINT FK_LOG_TABLE FOREIGN KEY (Userid) REFERENCES USERS(Userid) ON DELETE CASCADE
                     )
                 """)
                 print("Tabela LOG_TABLE criada com sucesso!")
