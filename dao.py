@@ -50,7 +50,7 @@ class DataBaseActions:
                     CREATE TABLE USERS (
                         Userid NUMBER PRIMARY KEY,
                         Password VARCHAR2(32), 
-                        IdLider NUMBER UNIQUE,
+                        IdLider CHAR(14) UNIQUE,
                         CONSTRAINT FK_USERS FOREIGN KEY (IdLider) REFERENCES Lider(CPI)
                     )
                 """)
