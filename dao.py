@@ -58,7 +58,7 @@ class DataBaseActions:
                 print("Preenchendo tabela USERS...")
                 self.fill_table_users()
         except oracledb.DatabaseError as e:
-            print("Tabela USERS já existe! Pulando etapa de criação...")
+            print("Falha na criação da tabela:", e.args[0].message)
 
     def create_log_table(self):
         # se a tabela ainda nao existir, criar
