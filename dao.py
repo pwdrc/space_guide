@@ -51,7 +51,7 @@ class DataBaseActions:
                         Userid NUMBER PRIMARY KEY,
                         Password VARCHAR2(32), 
                         IdLider CHAR(14) UNIQUE,
-                        CONSTRAINT FK_USERS_TABLE FOREIGN KEY (IdLider) REFERENCES Lider(CPI) ON DELETE CASCADE
+                        CONSTRAINT FK_USERS_TABLE_SG FOREIGN KEY (IdLider) REFERENCES Lider(CPI) ON DELETE CASCADE
                     )
                 """)
                 print("Tabela USERS criada com sucesso!")
@@ -61,10 +61,9 @@ class DataBaseActions:
                     self.fill_table_users()
                     print("Tabela USERS preenchida com sucesso!")
                 except oracledb.DatabaseError as e:
-                    print("Falha no preenchimento da tabela:", e.args[0].message)
-                    
+                    print(f"Falha no preenchimento da tabela USERS: {e.args[0].message}")                    
         except oracledb.DatabaseError as e:
-            print("Falha na criação da tabela:", e.args[0].message)
+            print(f"Falha na criação da USERS (tabela): {e.args[0].message}")
 
     def create_log_table(self):
         # se a tabela ainda nao existir, criar
@@ -76,12 +75,12 @@ class DataBaseActions:
                         Userid NUMBER,
                         Timestamp TIMESTAMP,
                         Message VARCHAR2(255),
-                        CONSTRAINT FK_LOG_TABLE FOREIGN KEY (Userid) REFERENCES USERS(Userid) ON DELETE CASCADE
+                        CONSTRAINT FK_LOG_TABLE_SG FOREIGN KEY (Userid) REFERENCES USERS(Userid) ON DELETE CASCADE
                     )
                 """)
                 print("Tabela LOG_TABLE criada com sucesso!")
         except oracledb.DatabaseError as e:
-            print("Tabela LOG_TABLE já existe! Pulando etapa de criação...")
+            print(f"Falha na criação da LOG_TABLE: {e.args[0].message}")
     
     def insert_log(self, user_id, message):
         with self.connection.cursor() as cursor:

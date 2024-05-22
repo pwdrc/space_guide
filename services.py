@@ -2,8 +2,17 @@
 # The services are responsible for handling the business logic of the application.
 # The services interact with the DAO classes to access the database.
 
-from dao import UserDAO
+from dao import DataBaseActions
 
-class UserService:
+class SpaceGuideServices:
     def __init__(self):
-        self.user_dao = UserDAO()
+        self.service = DataBaseActions()
+        self.on = False
+
+    def init_environment(self):
+        if not self.on: 
+        print(f"Configurando a base de dados...")
+        self.service.create_table_users()
+        self.service.create_table_log_table()
+        self.on = True
+        
