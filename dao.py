@@ -33,7 +33,7 @@ class DataBaseActions:
         with self.connection.cursor() as cursor:
             cursor.execute("""
                 INSERT INTO USERS (Userid, Password, IdLider)
-                SELECT DBMS_RANDOM.VALUE(1000, 9999), standard_hash('123456', 'MD5'), Lider.CPI
+                SELECT round(BMS_RANDOM.VALUE(1000, 9999)), standard_hash('123456', 'MD5'), Lider.CPI
                 FROM Lider
                 WHERE Lider.CPI NOT IN (SELECT IdLider FROM USERS)
             """)
