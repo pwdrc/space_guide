@@ -13,8 +13,6 @@ class DataBaseActions:
             password=self.config.ORACLE_PASSWORD,
             dsn=self.config.ORACLE_DSN
         )
-        self.create_table_users()
-        self.create_log_table()
     
 # criada uma tabela chamada USERS, para armazenar os usuários do sistema, com os
 # seguintes atributos: Userid (ID sintético), Password, IdLider (id na tabela de origem - Lider). A
@@ -60,9 +58,7 @@ class DataBaseActions:
                     print("Tabela USERS criada com sucesso!")
 
                     try:
-                        print("Preenchendo tabela USERS...")
                         self.fill_table_users()
-                        print("Tabela USERS preenchida com sucesso!")
                     except oracledb.DatabaseError as e:
                         print(f"Falha no preenchimento da tabela USERS: {e.args[0].message}")                    
             except oracledb.DatabaseError as e:
