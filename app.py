@@ -38,7 +38,7 @@ def login():
             login_user(user)
             return redirect(url_for('home'))
 
-        flash('Login inválido. Tente novamente.', 'error')
+        flash('An impostor! The Sideral Big Brother are staring your acts...', 'error')
 
     return render_template('login.html', form=form)
 
