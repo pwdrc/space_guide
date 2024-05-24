@@ -28,16 +28,15 @@ def login():
         #     flash('Login inválido. Tente novamente.', 'error')
 
         if action.login(username, password):
-            return redirect(url_for('home', user_id=username))
+            return redirect(url_for('home'))
         else:
             flash('Login inválido. Tente novamente.', 'error')
     # Renderiza o template de login se a requisição for um GET ou se os dados do formulário não passarem nas validações
     return render_template('login.html', form=form)
 
-
-@app.route('/home/<user_id>')
-def home(user_id):
-    return render_template('home.html', user_id=user_id)
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
