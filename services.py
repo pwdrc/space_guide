@@ -18,21 +18,23 @@ class SpaceGuideServices:
         except oracledb.DatabaseError as e:
             print(f"Erro ao configurar a base de dados: {e.args[0].message}")
             exit(1)
-    
+               
     def login(self, username, password):
         user_info = self.service.get_login_info(username)
-        # print(self.decode_md5_password(user_info[1]))
-        if user_info and user_info[1] == "E10ADC3949BA59ABBE56E057F20F883E":
-            return True
-        else:
+        if user_info is None:
             return False
+
+        hashed_password = hashlib.md5(password.encode()).hexdigest().upper()
+        if user_info[1] == hashed_password:
+            return True
+
+        return False
         
     def set_url(self, role):
         if role == "COMANDANTE":
             return "/commander"
-        elif role == "OFICIAL":
+        if role == "OFICIAL":
             return "/officer"
-        elif role == "CIENTISTA":
+        if role == "CIENTISTA":
             return "/scientist"
-        else:
-            return "/leader"
+        return "/leader"

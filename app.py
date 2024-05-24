@@ -1,10 +1,22 @@
 from flask import Flask, render_template, redirect, url_for, flash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from forms import LoginForm
 from services import SpaceGuideServices
 import os
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class User(UserMixin):
+    def __init__(self, user_id):
+        self.id = user_id
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
 
 action = SpaceGuideServices()
 action.init_environment()
@@ -20,19 +32,21 @@ def login():
         username = form.username.data
         password = form.password.data
 
-        # Autenticação do usuário
-        # role = action.login(username, password)
-        # if role:
-        #     return redirect(url_for('home', user_id=username))
-        # else:
-        #     flash('Login inválido. Tente novamente.', 'error')
-
-        if action.login(username, password):
+        login_successful = action.login(username, password)
+        if login_successful:
+            user = User(username)
+            login_user(user)
             return redirect(url_for('home'))
-        else:
-            flash('Login inválido. Tente novamente.', 'error')
-    # Renderiza o template de login se a requisição for um GET ou se os dados do formulário não passarem nas validações
+
+        flash('Login inválido. Tente novamente.', 'error')
+
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route('/home')
 def home():
