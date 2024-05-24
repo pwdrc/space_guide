@@ -15,6 +15,7 @@ class SpaceGuideServices:
             print(f"Configurando a base de dados...")
             self.service.create_table_users()
             self.service.create_log_table()
+
         except oracledb.DatabaseError as e:
             print(f"Erro ao configurar a base de dados: {e.args[0].message}")
             exit(1)
@@ -26,15 +27,17 @@ class SpaceGuideServices:
 
         hashed_password = hashlib.md5(password.encode()).hexdigest().upper()
         if user_info[1] == hashed_password:
-            return True
 
+            return True
         return False
         
-    def set_url(self, role):
-        if role == "COMANDANTE":
-            return "/commander"
-        if role == "OFICIAL":
-            return "/officer"
-        if role == "CIENTISTA":
-            return "/scientist"
-        return "/leader"
+    def get_role(self, userid):
+        CPI = self.service.get_CPI_by_userid(userid)
+        print(f">>>>> CPI: {CPI}")
+        if self.service.is_user_a_faction_leader(CPI):
+            return 'LIDER_FACCAO'
+
+        role = self.service.get_role_by_CPI(CPI).strip()
+        print(f">>>>> Role: {role}")
+        return role
+        

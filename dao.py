@@ -8,11 +8,15 @@ class DataBaseActions:
     def __init__(self):
         self.config = AccessConfig()
         self.config.get_db_credentials()
-        self.connection = oracledb.connect(
-            user=self.config.ORACLE_USER,
-            password=self.config.ORACLE_PASSWORD,
-            dsn=self.config.ORACLE_DSN
-        )
+        try:
+            self.connection = oracledb.connect(
+                user=self.config.ORACLE_USER,
+                password=self.config.ORACLE_PASSWORD,
+                dsn=self.config.ORACLE_DSN
+            )
+        except oracledb.DatabaseError as e:
+            print(f"Erro ao conectar ao banco de dados: {e.args[0].message}")
+            exit(1)
     
 # criada uma tabela chamada USERS, para armazenar os usuários do sistema, com os
 # seguintes atributos: Userid (ID sintético), Password, IdLider (id na tabela de origem - Lider). A
@@ -141,14 +145,34 @@ class DataBaseActions:
             """, username=username)
             return cursor.fetchone()
     
-    def get_role_by_leader_id(self, leader_id):
+    def get_role_by_CPI(self, CPI):
         with self.connection.cursor() as cursor:
             cursor.execute("""
                 SELECT Cargo
                 FROM Lider
-                WHERE CPI = :leader_id
-            """, leader_id=leader_id)
+                WHERE CPI = :CPI
+            """, CPI=CPI)
+            result = cursor.fetchone()
+            return result[0] if result else 'ZEH_NGM'
+        
+    def get_CPI_by_userid(self, userid):
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT Lider.CPI
+                FROM Lider
+                JOIN USERS
+                ON USERS.IdLider = Lider.CPI
+                WHERE USERS.Userid = :userid
+            """, userid=userid)
             result = cursor.fetchone()
             return result[0] if result else None
-        
     
+    def is_user_a_faction_leader(self, CPI):
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM faccao
+                WHERE lider = :CPI
+            """, CPI=CPI)
+            result = cursor.fetchone()
+            return result[0] > 0

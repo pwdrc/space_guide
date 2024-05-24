@@ -13,6 +13,7 @@ login_manager.init_app(app)
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
+        self.role = action.get_role_by_leader_id(user_id)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -38,7 +39,7 @@ def login():
             login_user(user)
             return redirect(url_for('home'))
 
-        flash('Login inválido. Tente novamente.', 'error')
+        flash('An impostor! The Sideral Big Brother are staring your acts...', 'error')
 
     return render_template('login.html', form=form)
 
