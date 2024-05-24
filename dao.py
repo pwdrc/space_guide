@@ -24,7 +24,29 @@ class DataBaseActions:
 # via SQL Developer. Além disso, deve ser criada uma tabela chamada LOG_TABLE para
 # armazenar o log de acessos e operações dos usuários do sistema, com os seguintes atributos:
 # Userid (associado à table a USERS), timestamp, message. A tabela de logs deverá ser mantida
-# por chamadas da aplicação.     
+# por chamadas da aplicação. 
+  
+# possibilidade de procedure:  
+# CREATE OR REPLACE PROCEDURE InsertMissingLeaders AS
+#   CURSOR LeaderCursor IS
+#     SELECT IdLider
+#     FROM Lider
+#     WHERE IdLider NOT IN (SELECT IdLider FROM USERS);
+
+#   DefaultPassword VARCHAR2(32) := 'senha_padrao';  -- Substitua 'senha_padrao' pela senha padrão desejada
+# BEGIN
+#   FOR LeaderRecord IN LeaderCursor LOOP
+#     INSERT INTO USERS (IdLider, Password)
+#     VALUES (LeaderRecord.IdLider, DBMS_OBFUSCATION_TOOLKIT.MD5 (input_string => DefaultPassword));
+#   END LOOP;
+
+#   COMMIT;
+# EXCEPTION
+#   WHEN OTHERS THEN
+#     DBMS_OUTPUT.PUT_LINE('Erro: ' || SQLCODE || ' - ' || SQLERRM);
+#     ROLLBACK;
+# END InsertMissingLeaders;
+# /
 
     def fill_table_users(self):
         # criar um procedimento (PL/SQL) para encontrar líderes sem respectivas tuplas na tabela USERS e inserí-los com uma senha padrão
@@ -33,7 +55,7 @@ class DataBaseActions:
         with self.connection.cursor() as cursor:
             cursor.execute("""
                 INSERT INTO USERS (Userid, Password, IdLider)
-                SELECT round(BMS_RANDOM.VALUE(1000, 9999)), standard_hash('123456', 'MD5'), Lider.CPI
+                SELECT round(DBMS_RANDOM.VALUE(1000, 9999)), standard_hash('123456', 'MD5'), Lider.CPI
                 FROM Lider
                 WHERE Lider.CPI NOT IN (SELECT IdLider FROM USERS)
             """)
@@ -56,16 +78,17 @@ class DataBaseActions:
                         )
                     """)
                     print("Tabela USERS criada com sucesso!")
-
-                    try:
-                        self.fill_table_users()
-                    except oracledb.DatabaseError as e:
-                        print(f"Falha no preenchimento da tabela USERS: {e.args[0].message}")                    
+                   
             except oracledb.DatabaseError as e:
                 print(f"Falha na criação da USERS (tabela): {e.args[0].message}")
         else:
             print("Tabela USERS já existe! Continuando...")
 
+        try:
+            self.fill_table_users()
+        except oracledb.DatabaseError as e:
+            print(f"Falha no preenchimento da tabela USERS: {e.args[0].message}")
+    
     def create_log_table(self):
         # se a tabela ainda nao existir, criar
         # se existir, informar que a tabela ja existe
@@ -108,3 +131,24 @@ class DataBaseActions:
         with self.connection.cursor() as cursor:
             for r in cursor.execute(sql):
                 print(r)
+
+    def get_login_info(self, username):
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT *
+                FROM USERS
+                WHERE UserId = :username
+            """, username=username)
+            return cursor.fetchone()
+    
+    def get_role_by_leader_id(self, leader_id):
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT Cargo
+                FROM Lider
+                WHERE CPI = :leader_id
+            """, leader_id=leader_id)
+            result = cursor.fetchone()
+            return result[0] if result else None
+        
+    

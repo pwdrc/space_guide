@@ -1,5 +1,6 @@
 # Description: Configuration file for the application.
 # The configuration file contains the connection information for the Oracle database.
+import getpass
 
 class AccessConfig:
     ORACLE_USER = None
@@ -8,4 +9,4 @@ class AccessConfig:
 
     def get_db_credentials(self):
         self.ORACLE_USER = input("Enter the Oracle username: ")
-        self.ORACLE_PASSWORD = input("Enter the Oracle password: ")
+        self.ORACLE_PASSWORD = getpass.getpass("Enter the Oracle password: ")

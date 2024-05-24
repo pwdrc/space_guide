@@ -1,9 +1,22 @@
 from flask import Flask, render_template, redirect, url_for, flash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from forms import LoginForm
 from services import SpaceGuideServices
 import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class User(UserMixin):
+    def __init__(self, user_id):
+        self.id = user_id
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
 
 action = SpaceGuideServices()
 action.init_environment()
@@ -19,22 +32,25 @@ def login():
         username = form.username.data
         password = form.password.data
 
-        # Autenticação do usuário
-        user = user_dao.get_user_by_id(username)
-        if user and user.password == password:
-            # Simples autenticação de senha; em produção, use hashes seguros
-            return redirect(url_for('home', user_id=user.user_id))
-        else:
-            flash('Invalid username or password')
-    
+        login_successful = action.login(username, password)
+        if login_successful:
+            user = User(username)
+            login_user(user)
+            return redirect(url_for('home'))
+
+        flash('Login inválido. Tente novamente.', 'error')
+
     return render_template('login.html', form=form)
 
-@app.route('/home/<user_id>')
-def home(user_id):
-    user = user_dao.get_user_by_id(user_id)
-    if not user:
-        return redirect(url_for('login'))
-    return render_template('home.html', user=user)
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
