@@ -40,4 +40,8 @@ class SpaceGuideServices:
         role = self.service.get_role_by_CPI(CPI).strip()
         print(f">>>>> Role: {role}")
         return role
+    
+    def register_access(self, userid, message):
+        self.service.insert_log(userid, message)
+        print(">>>>> Log gravado com sucesso!")
         
