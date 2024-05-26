@@ -9,11 +9,12 @@ app.secret_key = os.urandom(24)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
-        self.role = action.get_role_by_leader_id(user_id)
+        self.role = action.get_role(user_id)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -50,6 +51,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/home')
+@login_required
 def home():
     return render_template('home.html')
 
