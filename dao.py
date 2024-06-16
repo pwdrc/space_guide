@@ -166,6 +166,39 @@ class DataBaseActions:
             """, userid=userid)
             result = cursor.fetchone()
             return result[0] if result else None
+        
+    def get_name_by_userid(self, userid):
+        CPI = self.get_CPI_by_userid(userid)
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT nome
+                FROM Lider
+                WHERE CPI = :CPI
+            """, CPI=CPI)
+            result = cursor.fetchone()
+            return result[0] if result else None
+        
+    def get_faccao_by_userid(self, userid):
+        CPI = self.get_CPI_by_userid(userid)
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT nome
+                FROM faccao
+                WHERE lider = :CPI
+            """, CPI=CPI)
+            result = cursor.fetchone()
+            return result[0] if result else None
+    
+    def get_nacao_by_userid(self, userid):
+        CPI = self.get_CPI_by_userid(userid)
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT nacao
+                FROM lider
+                WHERE CPI = :CPI
+            """, CPI=CPI)
+            result = cursor.fetchone()
+            return result[0] if result else None
     
     def is_user_a_faction_leader(self, CPI):
         with self.connection.cursor() as cursor:

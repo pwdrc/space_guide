@@ -41,6 +41,21 @@ class SpaceGuideServices:
         print(f">>>>> Role: {role}")
         return role
     
+    def get_name(self, userid):
+        name = self.service.get_name_by_userid(userid).strip()
+        print(f">>>>> Name: {name}")
+        return name
+    
+    def get_faccao(self, userid):
+        faccao = self.service.get_faccao_by_userid(userid).strip()
+        print(f">>>>> Faccao: {faccao}")
+        return faccao
+    
+    def get_nacao(self, userid):
+        nacao = self.service.get_nacao_by_userid(userid).strip()
+        print(f">>>>> Nacao: {nacao}")
+        return nacao
+    
     def register_access(self, userid, message):
         self.service.insert_log(userid, message)
         print(">>>>> Log gravado com sucesso!")
