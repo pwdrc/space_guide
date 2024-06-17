@@ -179,4 +179,4 @@ def criar_federacao():
 # CRUD CIENTISTA para gerenciar estrelas
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
