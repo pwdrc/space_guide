@@ -1,0 +1,82 @@
+<!-- Relatórios
+Para cada tipo de usuário, deve ser possível gerar relatórios claros e informativos, pensando na
+utilidade de cada relatório para seus respectivos usuários finais. É interessante, por exemplo,
+aplicar alguma ordenação/agrupamento que faça sentido em cada um dos relatórios.
+1. Líder de facção:
+a. Informações sobre comunidades da própria facção: um líder de facção está
+interessado em recuperar informações sobre as comunidades participantes,
+facilitando a tomada de decisões de expansão da própria facção.
+i. Comunidades podem ser agrupadas por nação, espécie, planeta, e/ou
+sistema.
+2. Oficial:
+a. Informações de habitantes da própria nação: um Oficial está interessado em
+monitorar o crescimento populacional de sua nação. Sendo assim, é interessante
+para o usuário que o sistema gere relatórios com métricas interessantes sobre
+crescimento e deslocamento populacional.
+i. Habitantes podem ser monitorados com o uso da tabela Habitacao,
+podendo ser agrupados por facção, espécie, planeta, ou sistema.
+3. Comandante:
+a. Informações de planetas dominados por todas as nações: um comandante está
+interessado em informações de domínio tanto de sua quanto de outras nações.
+Sendo assim, comandantes têm acesso a relatórios sobre planetas dominados e de
+potencial dominação, contendo para cada planeta informações como: nação
+dominante (se houver), datas de início e fim da última dominação, quantidades de
+comunidades, espécies, habitantes, e facções presentes, facção majoritária (se
+houver), entre outros.
+i. Informações estratégicas importantes (a ser definido pelo grupo) devem estar
+disponíveis apenas para comandantes de suas respectivas nações, sendo
+ocultadas para demais comandantes na geração do relatório.
+ii. No mesmo relatório, comandantes devem poder ter acesso a informações
+sobre planetas com potencial de expansão de sua nação, i.e., planetas não
+-errantes que não estão sendo dominados por outra nação. Esses planetas
+com potencial de dominação podem pertencer a um sistema em que a nação
+já está presente, ou a um sistema vizinho/próximo em que a nação não está
+presente . Podem ser adicionados, por exemplo, filtros de distância para
+encontrar planetas em sistemas próximos ao território da nação (obs: o
+território de uma nação é o conjunto de sistemas onde existem planetas
+dominados por ela) A Figura 1 ilustra o território da Nação X e as distâncias
+dos sistemas das estrelas Sirius e Barnand's Star. Dica: pode-se utilizar a
+distância Euclideana -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Relatórios</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body class="bg-gray-100">
+        <nav class="flex items-center bg-blue-700 mb-4">
+            <a href="/home" class="text-white font-bold py-2 px-4">Home</a>
+            <p class="text-xl text-white font-bold py-2 px-4">usuário: {{ name }}</p>
+            <!-- Spacer element com estilo inline para flex-grow -->
+            <div style="flex-grow: 1;"></div>
+            <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
+        </nav>
+        <div class="mb-4 mt-4">
+            <h1 class="text-3xl font-bold text-center py-2 mb-4">Relatórios</h1>
+            {% if role == 'LIDER_FACCAO' %}
+            <!-- apresentar relatórios numa tabela e dar a opcao de fazer o download no formato de planilha-->
+            <table class="table-auto border-collapse w-full">
+                <thead>
+                    <tr>
+                        <th class="border border-blue-600">Nação</th>
+                        <th class="border border-blue-600">Espécie</th>
+                        <th class="border border-blue-600">Planeta</th>
+                        <th class="border border-blue-600">Sistema</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comunidade in comunidades %}
+                    <tr>
+                        <td class="border border-blue-600">{{ comunidade.nacao }}</td>
+                        <td class="border border-blue-600">{{ comunidade.especie }}</td>
+                        <td class="border border-blue-600">{{ comunidade.planeta }}</td>
+                        <td class="border border-blue-600">{{ comunidade.sistema }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {%endif%}
+        </div>
+        </body>
+        </html>
