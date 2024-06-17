@@ -29,7 +29,7 @@ a. Gerenciar (CRUD) estrelas -->
             <!-- Spacer element com estilo inline para flex-grow -->
             <div style="flex-grow: 1;"></div>
             <a href="{{ url_for('relatorios') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Relatórios</a>
-            <a href="/logout" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
+            <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
         </nav>
         <div class="mt-4 mb-4">
             {% if role == 'LIDER_FACCAO' %}
@@ -37,7 +37,7 @@ a. Gerenciar (CRUD) estrelas -->
             <div>
                 <div class="flex justify-center items-center mt-4 bg-gray-100">
                     <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                        <form action="{{ url_for('alterar_nome') }}" method="POST">
+                        <form action="{{ url_for('alterar_nome_faccao') }}" method="POST">
                             <h4 class="text-2xl py-2 px-4">Alterar nome da Facção</h4>
                             <br>
                             <input class="bg-gray-100 py-2 px-4" type="text" name="novo_nome" placeholder="Novo nome da facção" required>

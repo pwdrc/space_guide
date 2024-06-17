@@ -83,7 +83,32 @@ def home():
 def relatorios():
     user_role = session.get('role')
     user_name = session.get('name')
-    return render_template('relatorios.html', role=user_role, name=user_name)
+    if user_role == 'LIDER_FACCAO':
+# Para cada tipo de usuário, deve ser possível gerar relatórios claros e informativos, pensando na
+# utilidade de cada relatório para seus respectivos usuários finais. É interessante, por exemplo,
+# aplicar alguma ordenação/agrupamento que faça sentido em cada um dos relatórios.
+# 1. Líder de facção:
+# a. Informações sobre comunidades da própria facção: um líder de facção está
+# interessado em recuperar informações sobre as comunidades participantes,
+# facilitando a tomada de decisões de expansão da própria facção.
+# i. Comunidades podem ser agrupadas por nação, espécie, planeta, e/ou
+# sistema.
+
+        user_faccao = session.get('faccao')
+        # gerar um dict de comunidades só para teste
+        comunidade = {'nome': 'comunidade1', 'nacao': 'nacao1', 'especie': 'especie1', 'planeta': 'planeta1', 'sistema': 'sistema1'}
+        comunidades = [comunidade, comunidade, comunidade]
+        return render_template('relatorios.html', role=user_role, name=user_name, faccao=user_faccao, comunidades=comunidades)
+
+# # download_report lider_faccao
+# @app.route('/download_report')
+# @login_required
+# def download_report():
+#     user_role = session.get('role')
+#     user_name = session.get('name')
+#     if user_role == 'LIDER_FACCAO':
+#         # gerar um relatório em excel
+        
 
 # lider
 @app.route('/lider/alterar_nome', methods=['POST'])
@@ -92,7 +117,7 @@ def alterar_nome_faccao():
     if session.get('role') == 'LIDER_FACCAO':
         # Lógica para alterar o nome da facção
         novo_nome = request.form['novo_nome']
-        action.alterar_nome_facacao(session.get('name'), novo_nome)
+        action.alterar_nome_faccao(session.get('name'), novo_nome)
         flash('Nome da facção alterado com sucesso!', 'success')
         return redirect(url_for('home'))
     else:
