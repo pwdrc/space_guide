@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seleção de Perfil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="bg-white p-8 rounded shadow-md w-96">
+            <h1 class="text-3xl font-bold mb-6 text-center text-gray-700">Selecione o perfil</h1>
+            <form action="{{ url_for('select_profile') }}" method="post">
+                <button type="submit" name="profile" value="leader" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center mb-4">LÍDER</button>
+                <button type="submit" name="profile" value="outro_perfil" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center">{{ role }}</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

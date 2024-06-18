@@ -32,55 +32,8 @@ a. Gerenciar (CRUD) estrelas -->
             <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
         </nav>
         <div class="mt-4 mb-4">
-            {% if role == 'LIDER_FACCAO' %}
-            <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Líder da Facção {{ faccao }}</h3>
-            <div>
-                <div class="flex justify-center items-center mt-4 bg-gray-100">
-                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                        <form action="{{ url_for('alterar_nome_faccao') }}" method="POST">
-                            <h4 class="text-2xl py-2 px-4">Alterar nome da Facção</h4>
-                            <br>
-                            <input class="bg-gray-100 py-2 px-4" type="text" name="novo_nome" placeholder="Novo nome da facção" required>
-                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        </form>
-                    </div>
-                </div>
-                <br>
-                <div class="flex justify-center items-center mt-4 bg-gray-100">
-                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                        <form action="{{ url_for('indicar_lider') }}" method="POST">
-                            <h4 class="text-2xl py-2 px-4">Indicar novo líder</h4>
-                            <br>
-                            <input class="bg-gray-100 py-2 px-4" type="text" name="novo_lider" placeholder="Nome do novo líder" required>
-                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        </form>
-                    </div>
-                </div>
-                <br>
-                <div class="flex justify-center items-center mt-4 bg-gray-100">
-                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                        <form action="{{ url_for('credenciar_comunidade') }}" method="POST">
-                            <h4 class="text-2xl py-2 px-4">Credenciar nova comunidade</h4>
-                            <br>
-                            <input class="bg-gray-100 py-2 px-4 flex" type="text" name="comunidade" placeholder="Nome da comunidade" required>
-                            <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="planeta" placeholder="Nome do planeta" required>
-                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        </form>
-                    </div>
-                </div>
-                <br>
-                <div class="flex justify-center items-center mt-4 bg-gray-100">
-                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                        <form action="{{ url_for('remover_nacao') }}" method="POST">
-                            <h4 class="text-2xl py-2 px-4 mb-4">Remover nação</h4>
-                            <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nacao" placeholder="Nome da nação" required>
-                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
 
-            {% elif role == 'OFICIAL' %}
+            {% if role == 'OFICIAL' %}
             <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Oficial</h3>
             <div class="flex justify-center items-center mt-4 bg-gray-100">
                 <div class="bg-white p-10 w-96 rounded-lg shadow-lg">

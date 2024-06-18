@@ -1,6 +1,83 @@
-<!-- Interface de overview. Deve apresentar o nome de usuário autenticado. Além
-disso, podem ser apresentadas informações de overview de acordo com o usuário e
-links/botões que permitam a execução das funcionalidades. Também deve haver um
-caminho para a Interface 3
-Interface 3: Interface de relatórios. Deverão ser apresentados botões ou algo análogo para
-exibir os relatórios possíveis, de acordo com o usuário logado. -->
+<!-- Para cada tipo de usuário, deve ser possível realizar diferentes tarefas/funcionalidades. As
+funcionalidades são:
+1. Líder de facção:
+a. Gerenciar aspectos da própria facção da qual é líder:
+i. Alterar nome da facção
+ii. Indicar novo líder (Dica: quando um novo líder assume a facção, o líder
+anterior deve perder o acesso à funcionalidade)
+iii. Credenciar comunidades novas (Participa), que habitem planetas
+dominados por nações onde a facção está presente/credenciada
+b. Remover facção de Nação (NacaoFacao)
+2. Oficial: Não pode alterar nada na base. Apenas visualizar seus relatórios e overview.
+3. Comandante:
+a. Pode alterar aspectos da própria nação:
+i. Incluir/excluir a própria nação de uma federação existente
+ii. Criar nova federação, com a própria nação
+b. Insere nova dominância de um planeta que não está sendo dominado por ninguém
+4. Cientista:
+a. Gerenciar (CRUD) estrelas -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Lider Home</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body class="bg-gray-100">
+        <nav class="flex items-center bg-blue-700 mb-4">
+            <a href="/select_profile" class="text-white font-bold py-2 px-4">Alterar perfil</a>
+            <p class="text-xl text-white font-bold py-2 px-4">usuário: {{ name }}</p>
+            <!-- Spacer element com estilo inline para flex-grow -->
+            <div style="flex-grow: 1;"></div>
+            <a href="{{ url_for('relatorios') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Relatórios</a>
+            <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
+        </nav>
+        <div class="mt-4 mb-4">
+            <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Líder da Facção {{ faccao }}</h3>
+            <div>
+                <div class="flex justify-center items-center mt-4 bg-gray-100">
+                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                        <form action="{{ url_for('alterar_nome_faccao') }}" method="POST">
+                            <h4 class="text-2xl py-2 px-4">Alterar nome da Facção</h4>
+                            <br>
+                            <input class="bg-gray-100 py-2 px-4" type="text" name="novo_nome" placeholder="Novo nome da facção" required>
+                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="flex justify-center items-center mt-4 bg-gray-100">
+                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                        <form action="{{ url_for('indicar_lider') }}" method="POST">
+                            <h4 class="text-2xl py-2 px-4">Indicar novo líder</h4>
+                            <br>
+                            <input class="bg-gray-100 py-2 px-4" type="text" name="novo_lider" placeholder="Nome do novo líder" required>
+                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="flex justify-center items-center mt-4 bg-gray-100">
+                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                        <form action="{{ url_for('credenciar_comunidade') }}" method="POST">
+                            <h4 class="text-2xl py-2 px-4">Credenciar nova comunidade</h4>
+                            <br>
+                            <input class="bg-gray-100 py-2 px-4 flex" type="text" name="comunidade" placeholder="Nome da comunidade" required>
+                            <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="planeta" placeholder="Nome do planeta" required>
+                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="flex justify-center items-center mt-4 bg-gray-100">
+                    <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                        <form action="{{ url_for('remover_nacao') }}" method="POST">
+                            <h4 class="text-2xl py-2 px-4 mb-4">Remover nação</h4>
+                            <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nacao" placeholder="Nome da nação" required>
+                            <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
