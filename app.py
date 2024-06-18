@@ -7,6 +7,7 @@ from datetime import datetime
 import csv
 from io import StringIO
 import os
+from prettytable import PrettyTable
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)

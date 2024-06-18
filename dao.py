@@ -39,13 +39,14 @@ class DataBaseActions:
                         for line in lines:
                             line = line.split('|')
                             table.add_row(line)
-                        return table
+                        self.connection.commit()
+                        return table 
                         if num_lines < chunk_size:
                             break
                 except oracledb.IntegrityError as e:        
                     error_obj, = e.args
                     return  error_obj.message
-                self.connection.commit()
+                
 
 ######################################################################
 ########### funções lider faccao #####################################
@@ -57,13 +58,14 @@ class DataBaseActions:
             query = 'pacote_lider.alterar_nome_faccao'
             try:
                 cursor.callproc(query,(NomeAntigo,NomeNovo))
+                self.connection.commit()
             except oracledb.IntegrityError as e:   
                 error_obj, = e.args
                 return error_obj.message
             else:
                 msg ="Alteracao realizada com sucesso"
                 return msg
-            self.connection.commit()
+            
 
     #       Funcao a.ii
     def Indicar_Novo_Lider(self,userid,CPI_Novo):
@@ -72,13 +74,14 @@ class DataBaseActions:
             query = 'Pacote_Lider.indicar_novo_lider'
             try:
                 cursor.callproc(query,(CPI,CPI_Novo))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message
             else:
                 msg = "O novo lider foi indicado com sucesso"
                 return msg
-            self.connection.commit()
+            
     
     #       Funcao a.iii
     def Credencia_Comunidade(self,userid,Especie,Comunidade):
@@ -87,6 +90,7 @@ class DataBaseActions:
             query = 'Pacote_Lider.lider_insere_pariticipa'
             try:
                 cursor.callproc(query,(Faccao,Especie,Comunidade))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message
@@ -94,7 +98,7 @@ class DataBaseActions:
                 msg = "A Comunidade foi credenciada com sucesso"
                 return msg    
 
-            self.connection.commit()
+            
 
     #       Funcao b
     def Remove_Faccao_Naccao(self,userid,Nacao):
@@ -103,13 +107,14 @@ class DataBaseActions:
             query = 'Pacote_Lider.remover_faccao_de_nacao'
             try:
                 cursor.callproc(query,(Faccao,Nacao))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message
             else:
                 msg = "A Faccao foi removida da Nacao com sucesso"
                 return msg  
-            self.connection.commit()
+            
 
 
     #       Relatorios a.i
@@ -133,13 +138,14 @@ class DataBaseActions:
                     for line in lines:
                         line = line.split('|')
                         table.add_row(line)
+                    self.connection.commit()
                     return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message  
-            self.connection.commit()
+            
 
 
 ####################################################################################
@@ -154,14 +160,16 @@ class DataBaseActions:
             try:    
                 Nacao = self.get_nacao_by_userid(userid)
                 cursor.callproc(query,(Nacao,Federacao))
+                #finalizacao de transacao
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
             else:
                 msg = 'Insercao Completa com sucesso'
                 return msg 
-            #finalizacao de transacao
-            self.connection.commit()
+            
+            
 
     #       Funcao a.i.2
     def Remove_Nacao_Federacao(self,userid):
@@ -172,14 +180,16 @@ class DataBaseActions:
             try:    
                 Nacao = self.get_nacao_by_userid(userid)
                 cursor.callproc(query,(Nacao,))
+                #finalizacao de transacao
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message
             else:
                 msg = 'Remocao Completa com sucesso'
                 return msg
-            #finalizacao de transacao
-            self.connection.commit()
+            
+            
 
     #       Funcao a.ii
     def Cria_Nacao_Com_Federacao(self,userid,Federacao):
@@ -188,13 +198,14 @@ class DataBaseActions:
             try:    
                 Nacao = self.get_nacao_by_userid(userid)
                 cursor.callproc(query,(Nacao,Federacao))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
             else:
                 msg = 'Criacao Completa com sucesso'
                 return msg 
-            self.connection.commit()
+            
 
     #       Funcao b
     def Insere_Nova_Dominancia(self,userid,Planeta):
@@ -203,13 +214,14 @@ class DataBaseActions:
             try:    
                 Nacao = self.get_nacao_by_userid(userid)
                 cursor.callproc(query,(Nacao,Planeta))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
             else:
                 msg = 'Insercao Completa com sucesso'
                 return msg 
-            self.connection.commit()
+            
 
     #       Relatorio a.i
     def Relatorio_Nacoes_Participa(self,userid):
@@ -227,6 +239,7 @@ class DataBaseActions:
                 num_lines_var.setvalue(0, chunk_size)
                 while True:
                     cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+                    self.connection.commit()
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
@@ -238,7 +251,7 @@ class DataBaseActions:
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
-            self.connection.commit()
+            
     
     #       Relatorio a.ii
     def Planetas_Ponteciais(self, userid,  DIST_MAX):
@@ -262,13 +275,14 @@ class DataBaseActions:
                     for line in lines:
                         line = line.split('|')
                         table.add_row(line)
+                    self.connection.commit()
                     return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
-            self.connection.commit()
+            
 
 
 ####################################################################################
@@ -280,13 +294,14 @@ class DataBaseActions:
             query = 'cientista.cria_estrela'
             try:    
                 cursor.callproc(query,(ID,Nome,Classificao,Massa,X,Y,Z))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
             else:
                 msg = 'Estrela criada com sucesso'
                 return msg
-            self.connection.commit()
+            
 
     #       Funcao a.2
     def Cria_Sistema(self,Estrela,Nome):
@@ -294,13 +309,14 @@ class DataBaseActions:
             query = 'cientista.cria_sistema'
             try:    
                 cursor.callproc(query,(Estrela,Nome))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
             else:
                 msg = 'Sistema criado com sucesso'
                 return msg 
-            self.connection.commit()
+            
 
     #       Funcao a.3
     def Cria_Oribta_Estrela(self,Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo):    
@@ -308,13 +324,14 @@ class DataBaseActions:
             query = 'cientista.cria_orbitaestrela'
             try:    
                 cursor.callproc(query,(Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo))
+                self.connection.commit()
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
             else:
                 msg = 'Orbita criada com sucesso'
                 return msg 
-            self.connection.commit()
+            
 
     #       Relatorio a.i
     def Estrelas_Sem_Classificao(self):
@@ -331,6 +348,7 @@ class DataBaseActions:
                 num_lines_var.setvalue(0, chunk_size)
                 while True:
                     cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+                    self.connection.commit()
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
@@ -342,7 +360,7 @@ class DataBaseActions:
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message  
-            self.connection.commit()
+            
 
     #       Relatorio a.ii
     def Planetas_Sem_Classificao(self):
@@ -359,6 +377,7 @@ class DataBaseActions:
                 num_lines_var.setvalue(0, chunk_size)
                 while True:
                     cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+                    self.connection.commit()
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
@@ -370,7 +389,7 @@ class DataBaseActions:
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message  
-            self.connection.commit()
+            
 
 
 ########### funções gerais de gerencia de login #####################################
