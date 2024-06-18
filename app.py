@@ -3,8 +3,9 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from forms import LoginForm
 from flask import request
 from services import SpaceGuideServices
-from dao import DataBaseActions
 from datetime import datetime
+import csv
+from io import StringIO
 import os
 
 app = Flask(__name__)
@@ -49,6 +50,7 @@ def login():
             session['name'] = user.name
             session['faccao'] = user.faccao
             session['is_leader'] = user.is_leader
+            session['user_id'] = username
             print(f">>>>> Role: {user.role}")
             print(f">>>>> Lider: {user.is_leader}")
             action.register_access(username, f'acesso em {datetime.now()}')
@@ -104,7 +106,9 @@ def select_profile():
 @app.route('/leader')
 @login_required
 def leader():
-    return render_template('leader.html')
+    nome = session.get('name')
+    faccao = session.get('faccao')
+    return render_template('leader.html', name=nome, faccao=faccao)
 
 @app.route('/home')
 @login_required
@@ -129,23 +133,74 @@ def home():
 def relatorios():
     user_role = session.get('role')
     user_name = session.get('name')
-    if user_role == 'LIDER_FACCAO':
+    is_leader = session.get('is_leader', False)
 
-# Para cada tipo de usuário, deve ser possível gerar relatórios claros e informativos, pensando na
-# utilidade de cada relatório para seus respectivos usuários finais. É interessante, por exemplo,
-# aplicar alguma ordenação/agrupamento que faça sentido em cada um dos relatórios.
-# 1. Líder de facção:
-# a. Informações sobre comunidades da própria facção: um líder de facção está
-# interessado em recuperar informações sobre as comunidades participantes,
-# facilitando a tomada de decisões de expansão da própria facção.
-# i. Comunidades podem ser agrupadas por nação, espécie, planeta, e/ou
-# sistema.
+    # comunidades = action.get_comunidades_by_faccao(session.get('faccao')) if is_leader else []
+    r_comunidades = action.relatorio_comunidades(session.get('user_id')) if is_leader else []
+    r_nacoes = action.relatorio_nacoes(session.get('user_id')) if user_role == 'COMANDANTE' else []
+    r_planetas_potenciais = action.relatorio_planetas_potenciais(session.get('user_id'), 100) if user_role == 'COMANDANTE' else []
+    r_estrelas_sem_classificacao = action.relatorio_estrela_sem_classificacao if user_role == 'CIENTISTA' else []
+    r_planetas_sem_classificacao = action.relatorio_planeta_sem_classificacao if user_role == 'CIENTISTA' else []
 
-        user_faccao = session.get('faccao')
-        # gerar um dict de comunidades só para teste
-        comunidade = {'nome': 'comunidade1', 'nacao': 'nacao1', 'especie': 'especie1', 'planeta': 'planeta1', 'sistema': 'sistema1'}
-        comunidades = [comunidade, comunidade, comunidade]
-        return render_template('relatorios.html', role=user_role, name=user_name, faccao=user_faccao, comunidades=comunidades)
+    #return render_template('relatorios.html', is_leader=is_leader, role=user_role, name=user_name,comunidades=comunidades, habitantes=habitantes, planetas=planetas)
+    return render_template(
+        'relatorios.html',
+        is_leader=is_leader,
+        role=user_role,
+        name=user_name,
+        comunidades=r_comunidades,
+        nacoes=r_nacoes,
+        planetas_potenciais=r_planetas_potenciais,
+        estrelas_sem_classificacao=r_estrelas_sem_classificacao,
+        planetas_sem_classificacao=r_planetas_sem_classificacao
+    )
+
+@app.route('/download_report', methods=['POST'])
+@login_required
+def download_report():
+    report_type = request.form.get('report_type')
+    user_role = session.get('role')
+    user_name = session.get('name')
+
+    if report_type == 'leader' and session.get('is_leader'):
+        comunidades = action.get_comunidades_by_faccao(session.get('faccao'))
+        csv_data = [["Nação", "Espécie", "Planeta", "Sistema"]]
+        csv_data.extend([[c.nacao, c.especie, c.planeta, c.sistema] for c in comunidades])
+    elif report_type == 'oficial' and user_role == 'OFICIAL':
+        habitantes = action.get_habitantes_by_nacao(session.get('nacao'))
+        csv_data = [["Habitação", "Espécie", "Facção", "Planeta", "Sistema"]]
+        csv_data.extend([[h.habitacao, h.especie, h.faccao, h.planeta, h.sistema] for h in habitantes])
+    elif report_type == 'comandante' and user_role == 'COMANDANTE':
+        planetas = action.get_planetas_dominados()
+        csv_data = [["Planeta", "Nação Dominante", "Comunidades", "Espécies", "Habitantes", "Facções", "Facção Majoritária"]]
+        csv_data.extend([[p.nome, p.nacao_dominante, p.comunidades, p.especies, p.habitantes, p.faccoes, p.faccao_majoritaria] for p in planetas])
+    else:
+        flash("Acesso não autorizado para download desse relatório.")
+        return redirect(url_for('relatorios'))
+
+    si = StringIO()
+    cw = csv.writer(si)
+    cw.writerows(csv_data)
+    si.seek(0)
+    
+    return send_file(
+        si,
+        mimetype='text/csv',
+        as_attachment=True,
+        attachment_filename=f'relatorio_{report_type}_{user_name}.csv'
+    )
+# @login_required
+# def relatorios():
+#     user_role = session.get('role')
+#     user_name = session.get('name')
+#     is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
+#     # if user_role == 'LIDER_FACCAO':
+
+#     #     user_faccao = session.get('faccao')
+#     #     # gerar um dict de comunidades só para teste
+#     comunidade = {'nome': 'comunidade1', 'nacao': 'nacao1', 'especie': 'especie1', 'planeta': 'planeta1', 'sistema': 'sistema1'}
+#     comunidades = [comunidade, comunidade, comunidade]
+#     return render_template('relatorios.html', is_leader=is_leader, role=user_role, name=user_name, comunidades=comunidades)
 
 # # download_report lider_faccao
 # @app.route('/download_report')
@@ -162,73 +217,154 @@ def relatorios():
 @app.route('/lider/alterar_nome', methods=['POST'])
 @login_required
 def alterar_nome_faccao():
-    if session.get('role') == 'LIDER_FACCAO':
-        # Lógica para alterar o nome da facção
-        try:
-            # pegar novo_nome do formulario em da pagina
-            novo_nome = request.form['novo_nome']
-            action.update_faccao(session.get('name'), novo_nome)
-            flash('Nome da facção alterado com sucesso!', 'success')
-        except Exception as e:
-            flash(f'Erro ao alterar nome da facção: {e}', 'error')
-            return redirect(url_for('leader'))
-    else:
-        flash('Acesso não autorizado', 'error')
+    try:
+        novo_nome = request.form['novo_nome']
+        action.update_faccao(session.get('user_id'), novo_nome)
+        flash('Nome da facção alterado com sucesso!', 'success')
+        return redirect(url_for('leader'))
+    except Exception as e:
+        flash(f'Erro ao alterar nome da facção: {e}', 'error')
         return redirect(url_for('leader'))
 
 @app.route('/lider/indicar_lider', methods=['POST'])
 @login_required
 def indicar_lider():
-    if session.get('role') == 'LIDER_FACCAO':
+    try:
         novo_lider = request.form['novo_lider']
-        action.indicar_novo_lider(session.get('name'), novo_lider)
-        flash('Novo líder indicado com sucesso!', 'success')
-        return redirect(url_for('home'))
-    else:
-        flash('Acesso não autorizado', 'error')
-        return redirect(url_for('home'))
+        action.update_lider(session.get('user_id'), novo_lider)
+        flash('Líder indicado com sucesso!', 'success')
+        return redirect(url_for('leader'))
+    except Exception as e:
+        flash(f'Erro ao indicar novo líder: {e}', 'error')
+        return redirect(url_for('leader'))
 
 @app.route('/lider/credenciar_comunidade', methods=['POST'])
 @login_required
 def credenciar_comunidade():
-    if session.get('role') == 'LIDER_FACCAO':
+    try:
+        especie = request.form['especie']
         comunidade = request.form['comunidade']
-        planeta = request.form['planeta']
-        action.credenciar_comunidade(session.get('name'), comunidade, planeta)
+        action.add_comunidade(session.get('user_id'), especie, comunidade)
         flash('Comunidade credenciada com sucesso!', 'success')
-        return redirect(url_for('home'))
-    else:
-        flash('Acesso não autorizado', 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('leader'))
+    except Exception as e:
+        flash(f'Erro ao credenciar comunidade: {e}', 'error')
+        return redirect(url_for('leader'))
 
 @app.route('/lider/remover_nacao', methods=['POST'])
 @login_required
 def remover_nacao():
-    if session.get('role') == 'LIDER_FACCAO':
+    try:
         nacao = request.form['nacao']
-        action.remover_nacao(session.get('name'), nacao)
-        flash('Facção removida da nação com sucesso!', 'success')
-        return redirect(url_for('home'))
-    else:
-        flash('Acesso não autorizado', 'error')
-        return redirect(url_for('home'))
-    
+        action.rm_nacao(session.get('user_id'), nacao)
+        flash('Nação removida com sucesso!', 'success')
+        return redirect(url_for('leader'))
+    except Exception as e:
+        flash(f'Erro ao remover nação: {e}', 'error')
+        return redirect(url_for('leader'))
+
+# COMANDANTE
+
 @app.route('/comandante/add_nacao_federacao', methods=['POST'])
 @login_required
 def add_nacao_federacao():
-    pass
+    try:
+        federacao = request.form['add_federacao']
+        action.add_nacao_federacao(session.get('user_id'), federacao)
+        flash('Nação adicionada à federação com sucesso!', 'success')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Erro ao adicionar nação à federação: {e}', 'error')
+        return redirect(url_for('home'))
 
 @app.route('/comandante/rm_nacao_federacao', methods=['POST'])
 @login_required
 def rm_nacao_federacao():
-    pass
+    try:
+        excluir = request.form['rm_federacao']
+        if excluir == 'EXCLUIR':
+            action.rm_nacao_federacao(session.get('user_id'))
+            flash('Federação removida com sucesso!', 'success')
+        else:
+            flash('Operação cancelada.', 'info')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Erro ao remover federação: {e}', 'error')
+        return redirect(url_for('home'))
 
 @app.route('/comandante/criar_federacao', methods=['POST'])
 @login_required
 def criar_federacao():
-    pass
+    try:
+        nome = request.form['nova_federacao']
+        action.criar_nacao_federacao(session.get('user_id'), nome)
+        flash('Federação criada com sucesso!', 'success')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Erro ao criar federação: {e}', 'error')
+        return redirect(url_for('home'))
 
 # CRUD CIENTISTA para gerenciar estrelas
+# def add_estrela(self,ID,Nome,Classificao,Massa,X,Y,Z):
+#         self.service.Cria_Estrela(ID,Nome,Classificao,Massa,X,Y,Z)
+
+#     def add_sistema(self,Estrela,Nome):
+#         self.service.Cria_Sistema(Estrela,Nome)
+    
+#     def add_orbita_estrela(self,Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo):
+#         self.service.Cria_Oribta_Estrela(Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo)
+    
+#     def relatorio_estrela_sem_classificacao(self):
+#         return self.service.Estrelas_Sem_Classificao()
+    
+#     def relatorio_planeta_sem_classificacao(self):
+#         return self.service.Planetas_Sem_Classificao()
+@app.route('/cientista/add_estrela', methods=['POST'])
+@login_required
+def add_estrela():
+    try:
+        id = request.form['ID']
+        nome = request.form['nome']
+        classificacao = request.form['classificacao']
+        massa = request.form['massa']
+        x = request.form['X']
+        y = request.form['Y']
+        z = request.form['Z']
+        action.add_estrela(id, nome, classificacao, massa, x, y, z)
+        flash('Estrela adicionada com sucesso!', 'success')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Erro ao adicionar estrela: {e}', 'error')
+        return redirect(url_for('home'))
+    
+@app.route('/cientista/add_sistema', methods=['POST'])
+@login_required
+def add_sistema():
+    try:
+        estrela = request.form['estrela']
+        nome = request.form['sistema']
+        action.add_sistema(estrela, nome)
+        flash('Sistema adicionado com sucesso!', 'success')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Erro ao adicionar sistema: {e}', 'error')
+        return redirect(url_for('home'))
+
+@app.route('/cientista/add_orbita_estrela', methods=['POST'])
+@login_required
+def add_orbita_estrela():
+    try:
+        orbitante = request.form['orbitante']
+        orbitada = request.form['orbitada']
+        dist_min = request.form['distancia_min']
+        dist_max = request.form['distancia_max']
+        periodo = request.form['periodo']
+        action.add_orbita_estrela(orbitante, orbitada, dist_min, dist_max, periodo)
+        flash('Orbita adicionada com sucesso!', 'success')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Erro ao adicionar orbita: {e}', 'error')
+        return redirect(url_for('home'))
     
 if __name__ == '__main__':
     app.run(debug=True)

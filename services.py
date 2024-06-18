@@ -1,7 +1,3 @@
-# Description: This file contains the services for the user.
-# The services are responsible for handling the business logic of the application.
-# The services interact with the DAO classes to access the database.
-
 from dao import DataBaseActions
 import hashlib
 import oracledb
@@ -20,6 +16,10 @@ class SpaceGuideServices:
             print(f"Erro ao configurar a base de dados: {e.args[0].message}")
             exit(1)
                
+#########################################################
+# Funções de acesso ao banco de dados e regras de negócio
+#########################################################
+
     def login(self, username, password):
         user_info = self.service.get_login_info(username)
         if user_info is None:
@@ -44,7 +44,11 @@ class SpaceGuideServices:
         return name
     
     def get_faccao(self, userid):
-        faccao = self.service.get_faccao_by_userid(userid).strip()
+        faccao = self.service.get_faccao_by_userid(userid)
+        if faccao is not None:
+            faccao = faccao.strip()
+        else:
+            faccao = ""
         print(f">>>>> Faccao: {faccao}")
         return faccao
     
@@ -61,6 +65,63 @@ class SpaceGuideServices:
         CPI = self.service.get_CPI_by_userid(userid)
         return self.service.is_user_a_faction_leader(CPI)
     
-    def update_faccao(self, oldname, newname):
-        self.service.alterar_nome_faccao(oldname, newname)
-        print(">>>>> Nome da Faccao atualizado com sucesso!")
+    #########################################################
+    # LIDER
+    #########################################################
+    
+    def update_faccao(self, userid, novo_nome):
+        self.service.Alterar_Nome_Faccao(userid, novo_nome)
+
+    def update_lider(self, userid, CPI_novo_lider):
+        self.service.Indicar_Novo_Lider(userid, CPI_novo_lider)
+    
+    def add_comunidade(self, userid, especie, comunidade):
+        self.service.Credencia_Comunidade(userid, especie, comunidade)
+
+    def rm_nacao(self, userid, nacao):
+        self.service.Remove_Faccao_Naccao(userid, nacao)
+
+    def relatorio_comunidades(self, userid):
+        return self.service.Relatorio_Comunidades(userid)
+    
+    #########################################################
+    # COMANDANTE
+    #########################################################
+
+    def add_nacao_federacao(self, userid, Federacao):
+        self.service.Insere_Nacao_Federacao(userid, Federacao)
+    
+    def rm_nacao_federacao(self, userid):
+        self.service.Remove_Nacao_Federacao(userid)
+
+    def criar_nacao_federacao(self, userid, Federacao):
+        self.service.Cria_Nacao_Com_Federacao(userid, Federacao)
+    
+    def add_dominancia(self, userid, planeta):
+        self.service.Insere_Nova_Dominancia(userid, planeta)
+    
+    def relatorio_nacoes(self, userid):
+        return self.service.Relatorio_Nacoes_Participa(userid)
+
+    def relatorio_planetas_potenciais(self, userid, DIST_MAX):
+        return self.service.Planetas_Ponteciais(userid, DIST_MAX)
+    
+    #########################################################
+    # CIENTISTA
+    #########################################################
+
+    def add_estrela(self,ID,Nome,Classificao,Massa,X,Y,Z):
+        self.service.Cria_Estrela(ID,Nome,Classificao,Massa,X,Y,Z)
+
+    def add_sistema(self,Estrela,Nome):
+        self.service.Cria_Sistema(Estrela,Nome)
+    
+    def add_orbita_estrela(self,Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo):
+        self.service.Cria_Oribta_Estrela(Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo)
+    
+    def relatorio_estrela_sem_classificacao(self):
+        return self.service.Estrelas_Sem_Classificao()
+    
+    def relatorio_planeta_sem_classificacao(self):
+        return self.service.Planetas_Sem_Classificao()
+        

@@ -60,7 +60,8 @@ a. Gerenciar (CRUD) estrelas -->
                     <form action="{{ url_for('rm_nacao_federacao') }}" method="POST">
                         <h4 class="text-2xl py-2 px-4">Excluir {{ nacao }} de uma federação</h4>
                         <br>
-                        <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="rm_federacao" placeholder="Nome da federação" required>
+                        <p class="text-lg py-2 px-4">Para excluir sua nação da federação, digite "EXCLUIR" e clique em "ENVIAR".</p>
+                        <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="rm_federacao" placeholder="EXCLUIR" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
                     </form>
                 </div>
@@ -77,7 +78,7 @@ a. Gerenciar (CRUD) estrelas -->
                 </div>
             </div>
             <br>
-            <div class="flex justify-center items-center mt-4 bg-gray-100">
+            <!-- <div class="flex justify-center items-center mt-4 bg-gray-100">
                 <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
                     <form action="{{ url_for('add_dominancia') }}" method="POST">
                         <h4 class="text-2xl py-2 px-4">Inserir nova dominância</h4>
@@ -86,7 +87,7 @@ a. Gerenciar (CRUD) estrelas -->
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
                     </form>
                 </div>
-            </div>
+            </div> -->
             {% elif role == 'CIENTISTA' %}
             <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Cientista</h3>
             <div class="flex justify-center items-center mt-4 bg-gray-100">
@@ -94,9 +95,13 @@ a. Gerenciar (CRUD) estrelas -->
                     <form action="{{ url_for('add_estrela') }}" method="POST">
                         <h4 class="text-2xl py-2 px-4">Adicionar estrela</h4>
                         <br>
+                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="ID" placeholder="ID" required>
                         <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nome" placeholder="Nome da estrela" required>
-                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="tipo" placeholder="Tipo da estrela" required>
-                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="idade" placeholder="Idade da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="classificacao" placeholder="Classificacao" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="massa" placeholder="Massa" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="X" placeholder="X" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="Y" placeholder="Y" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="Z" placeholder="Z" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
                     </form>
                 </div>
@@ -108,6 +113,33 @@ a. Gerenciar (CRUD) estrelas -->
                         <h4 class="text-2xl py-2 px-4">Remover estrela</h4>
                         <br>
                         <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nome" placeholder="Nome da estrela" required>
+                        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                    </form>
+                </div>
+            </div>
+            <br>
+            <div class="flex justify-center items-center mt-4 bg-gray-100">
+                <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                    <form action="{{ url_for('get_estrela') }}" method="POST">
+                        <h4 class="text-2xl py-2 px-4">Adicionar Sistema</h4>
+                        <br>
+                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="estrela" placeholder="Nome da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="sistema" placeholder="Nome do sistema" required>
+                        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                    </form>
+                </div>
+            </div>
+            <br>
+            <div class="flex justify-center items-center mt-4 bg-gray-100">
+                <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                    <form action="{{ url_for('rm_sistema') }}" method="POST">
+                        <h4 class="text-2xl py-2 px-4">Adicionar Orbita</h4>
+                        <br>
+                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="orbitante" placeholder="Nome do orbitante" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="orbitada" placeholder="Nome da orbitada" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="distancia_min" placeholder="Distancia minima" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="distancia_max" placeholder="Distancia maxima" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="periodo" placeholder="Periodo" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
                     </form>
                 </div>
