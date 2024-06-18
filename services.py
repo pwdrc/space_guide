@@ -1,3 +1,4 @@
+import logging
 from dao import DataBaseActions
 import hashlib
 import oracledb
@@ -57,9 +58,16 @@ class SpaceGuideServices:
         print(f">>>>> Nacao: {nacao}")
         return nacao
     
-    def register_access(self, userid, message):
-        self.service.insert_log(userid, message)
-        print(">>>>> Log gravado com sucesso!")
+    # def register_access(self, userid, message):
+    #     self.service.insert_log(userid, message)
+    #     print(">>>>> Log gravado com sucesso!")
+
+    
+    def register_access(self, username, message):
+        # Verifique se o usuário existe antes de inserir o log
+        if self.service.get_login_info(username) is not None:
+            # Chame o método de inserção de log
+            self.service.insert_log(username, message)
 
     def is_leader(self, userid):
         CPI = self.service.get_CPI_by_userid(userid)

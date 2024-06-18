@@ -53,14 +53,12 @@ def login():
             session['user_id'] = username
             print(f">>>>> Role: {user.role}")
             print(f">>>>> Lider: {user.is_leader}")
-            action.register_access(username, f'acesso em {datetime.now()}')
             
             if session.get('is_leader') is True:
                 return redirect(url_for('select_profile', role=session.get('role')))
             return redirect(url_for('home'))
 
         flash('An impostor! The Sideral Big Brother are staring your acts...', 'error')
-        action.register_access(username, f'acesso negado em {datetime.now()}')
 
     return render_template('login.html', form=form)
 
@@ -113,6 +111,7 @@ def leader():
 @app.route('/home')
 @login_required
 def home():
+    # registrar acesso
     user_role = session.get('role')
     #is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
     #if is_leader:
@@ -142,6 +141,12 @@ def relatorios():
     r_estrelas_sem_classificacao = action.relatorio_estrela_sem_classificacao if user_role == 'CIENTISTA' else []
     r_planetas_sem_classificacao = action.relatorio_planeta_sem_classificacao if user_role == 'CIENTISTA' else []
 
+    print(f">>>>> Relatório de comunidades: {r_comunidades}")
+    print(f">>>>> Relatório de nações: {r_nacoes}")
+    print(f">>>>> Relatório de planetas potenciais: {r_planetas_potenciais}")
+    print(f">>>>> Relatório de estrelas sem classificação: {r_estrelas_sem_classificacao}")
+    print(f">>>>> Relatório de planetas sem classificação: {r_planetas_sem_classificacao}")
+    
     #return render_template('relatorios.html', is_leader=is_leader, role=user_role, name=user_name,comunidades=comunidades, habitantes=habitantes, planetas=planetas)
     return render_template(
         'relatorios.html',

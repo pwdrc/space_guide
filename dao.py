@@ -116,16 +116,42 @@ class DataBaseActions:
 
 
     #       Relatorios a.i
-    def Relatorio_Comunidades(self,userid):
+    # def Relatorio_Comunidades(self,userid):
+    #     with self.connection.cursor() as cursor:
+    #         Faccao = self.get_faccao_by_userid(userid)
+    #         chunk_size = 100
+    #         query = 'Pacote_Lider.relatorio_comunidades'
+    #         table = PrettyTable()
+    #         try:
+    #             cursor.callproc("dbms_output.enable")
+    #             table.field_names = ["Planeta","Comunidade","Especie","QTD_Habitantes","Nacao","Data_Ini"]
+    #             cursor.callproc(query,(Faccao,))
+    #             lines_var = cursor.arrayvar(str, chunk_size)
+    #             num_lines_var = cursor.var(int)
+    #             num_lines_var.setvalue(0, chunk_size)
+    #             while True:
+    #                 cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+    #                 num_lines = num_lines_var.getvalue()
+    #                 lines = lines_var.getvalue()[:num_lines]
+    #                 for line in lines:
+    #                     line = line.split('|')
+    #                     table.add_row(line)
+    #                 self.connection.commit()
+    #                 return table
+    #                 if num_lines < chunk_size:
+    #                     break
+    #         except oracledb.IntegrityError as e:
+    #             error_obj, = e.args
+    #             return error_obj.message  
+    def Relatorio_Comunidades(self, userid):
         with self.connection.cursor() as cursor:
-            Faccao = self.get_faccao_by_userid(userid)
+            faccao = self.get_faccao_by_userid(userid)
             chunk_size = 100
+            comunidades = []  # Lista para armazenar os dados das comunidades
             query = 'Pacote_Lider.relatorio_comunidades'
-            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                table.field_names = ["Planeta","Comunidade","Especie","QTD_Habitantes","Nacao","Data_Ini"]
-                cursor.callproc(query,(Faccao,))
+                cursor.callproc(query, (faccao,))
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
                 num_lines_var.setvalue(0, chunk_size)
@@ -134,16 +160,23 @@ class DataBaseActions:
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
-                        line = line.split('|')
-                        table.add_row(line)
-                    self.connection.commit()
-                    return table
+                        # Split the line by '|' and strip whitespace
+                        fields = [field.strip() for field in line.split('|')]
+                        # Create a dictionary for each row
+                        comunidade = {
+                            "Planeta": fields[0],
+                            "Comunidade": fields[1],
+                            "Especie": fields[2],
+                            "QTD_Habitantes": fields[3],
+                            "Nacao": fields[4],
+                            "Data_Ini": fields[5]
+                        }
+                        comunidades.append(comunidade)
                     if num_lines < chunk_size:
                         break
+                return comunidades  # Return the list of dictionaries
             except oracledb.IntegrityError as e:
-                error_obj, = e.args
-                return error_obj.message  
-            
+                return str(e)
 
 
 ####################################################################################
@@ -222,64 +255,144 @@ class DataBaseActions:
             
 
     #       Relatorio a.i
-    def Relatorio_Nacoes_Participa(self,userid):
+    # def Relatorio_Nacoes_Participa(self,userid):
+    #     with self.connection.cursor() as cursor:
+    #         Faccao = self.get_faccao_by_userid(userid)
+    #         chunk_size = 100
+    #         query = 'Comandante.recupera_informacoes'
+    #         table = PrettyTable()
+    #         try:
+    #             cursor.callproc("dbms_output.enable")
+    #             table.field_names = ["Planeta","Especie","Inteligente","Comunidade","QTD_Habitantes","Faccao"]
+    #             cursor.callproc(query,(Faccao,))
+    #             lines_var = cursor.arrayvar(str, chunk_size)
+    #             num_lines_var = cursor.var(int)
+    #             num_lines_var.setvalue(0, chunk_size)
+    #             while True:
+    #                 cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+    #                 self.connection.commit()
+    #                 num_lines = num_lines_var.getvalue()
+    #                 lines = lines_var.getvalue()[:num_lines]
+    #                 for line in lines:
+    #                     line = line.split('|')
+    #                     table.add_row(line)
+    #                 return table
+    #                 if num_lines < chunk_size:
+    #                     break
+    #         except oracledb.IntegrityError as e:
+    #             error_obj, = e.args
+    #             return error_obj.message 
+    def Relatorio_Nacoes_Participa(self, userid):
         with self.connection.cursor() as cursor:
             Faccao = self.get_faccao_by_userid(userid)
             chunk_size = 100
             query = 'Comandante.recupera_informacoes'
-            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                table.field_names = ["Planeta","Especie","Inteligente","Comunidade","QTD_Habitantes","Faccao"]
-                cursor.callproc(query,(Faccao,))
+                cursor.callproc(query, (Faccao,))
+
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
                 num_lines_var.setvalue(0, chunk_size)
+
+                data = []
                 while True:
                     cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
-                    self.connection.commit()
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
+
                     for line in lines:
-                        line = line.split('|')
-                        table.add_row(line)
-                    return table
+                        line_data = line.split('|')
+                        record = {
+                            "Planeta": line_data[0].strip(),
+                            "Especie": line_data[1].strip(),
+                            "Inteligente": line_data[2].strip(),
+                            "Comunidade": line_data[3].strip(),
+                            "QTD_Habitantes": line_data[4].strip(),
+                            "Faccao": line_data[5].strip()
+                        }
+                        data.append(record)
+
+                    self.connection.commit()
+
                     if num_lines < chunk_size:
                         break
+
+                return data
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                return error_obj.message 
+                return {"error": error_obj.message}
             
     
     #       Relatorio a.ii
-    def Planetas_Ponteciais(self, userid,  DIST_MAX):
+    # def Planetas_Ponteciais(self, userid,  DIST_MAX):
+    #     with self.connection.cursor() as cursor:
+    #         CPI = self.get_CPI_by_userid(userid)
+    #         DIST_MAX = 100
+    #         chunk_size = 100
+    #         query = 'comandante.planetas_pontenciais'
+    #         table = PrettyTable()
+    #         try:
+    #             cursor.callproc("dbms_output.enable")
+    #             table.field_names = ["ID_Astro","Raio","Habitacoes","Dist_Nacao"]
+    #             cursor.callproc(query,(CPI,DIST_MAX))
+    #             lines_var = cursor.arrayvar(str, chunk_size)
+    #             num_lines_var = cursor.var(int)
+    #             num_lines_var.setvalue(0, chunk_size)
+    #             while True:
+    #                 cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+    #                 num_lines = num_lines_var.getvalue()
+    #                 lines = lines_var.getvalue()[:num_lines]
+    #                 for line in lines:
+    #                     line = line.split('|')
+    #                     table.add_row(line)
+    #                 self.connection.commit()
+    #                 return table
+    #                 if num_lines < chunk_size:
+    #                     break
+    #         except oracledb.IntegrityError as e:
+    #             error_obj, = e.args
+    #             return error_obj.message 
+        
+    def Planetas_Ponteciais(self, userid, DIST_MAX):
         with self.connection.cursor() as cursor:
             CPI = self.get_CPI_by_userid(userid)
-            DIST_MAX = 100
             chunk_size = 100
             query = 'comandante.planetas_pontenciais'
-            table = PrettyTable()
+
             try:
                 cursor.callproc("dbms_output.enable")
-                table.field_names = ["ID_Astro","Raio","Habitacoes","Dist_Nacao"]
-                cursor.callproc(query,(CPI,DIST_MAX))
+                cursor.callproc(query, (CPI, DIST_MAX))
+
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
                 num_lines_var.setvalue(0, chunk_size)
+
+                data = []
                 while True:
                     cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
+
                     for line in lines:
-                        line = line.split('|')
-                        table.add_row(line)
+                        line_data = line.split('|')
+                        record = {
+                            "ID_Astro": line_data[0].strip(),
+                            "Raio": line_data[1].strip(),
+                            "Habitacoes": line_data[2].strip(),
+                            "Dist_Nacao": line_data[3].strip()
+                        }
+                        data.append(record)
+
                     self.connection.commit()
-                    return table
+
                     if num_lines < chunk_size:
                         break
+
+                return data
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                return error_obj.message 
+                return {"error": error_obj.message}
             
 
 
@@ -332,61 +445,115 @@ class DataBaseActions:
             
 
     #       Relatorio a.i
+    # def Estrelas_Sem_Classificao(self):
+    #     with self.connection.cursor() as cursor:
+    #         chunk_size = 100
+    #         query = 'cientista.estrela_nao_classificada'
+    #         table = PrettyTable()
+    #         try:
+    #             cursor.callproc("dbms_output.enable")
+    #             table.field_names = ["ID_Estrela","Massa","X","Y","Z"]
+    #             cursor.callproc(query)
+    #             lines_var = cursor.arrayvar(str, chunk_size)
+    #             num_lines_var = cursor.var(int)
+    #             num_lines_var.setvalue(0, chunk_size)
+    #             while True:
+    #                 cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+    #                 self.connection.commit()
+    #                 num_lines = num_lines_var.getvalue()
+    #                 lines = lines_var.getvalue()[:num_lines]
+    #                 for line in lines:
+    #                     line = line.split('|')
+    #                     table.add_row(line)
+    #                 return table
+    #                 if num_lines < chunk_size:
+    #                     break
+    #         except oracledb.IntegrityError as e:
+    #             error_obj, = e.args
+    #             return error_obj.message 
     def Estrelas_Sem_Classificao(self):
         with self.connection.cursor() as cursor:
             chunk_size = 100
             query = 'cientista.estrela_nao_classificada'
-            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                table.field_names = ["ID_Estrela","Massa","X","Y","Z"]
                 cursor.callproc(query)
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
                 num_lines_var.setvalue(0, chunk_size)
-                while True:
-                    cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
-                    self.connection.commit()
-                    num_lines = num_lines_var.getvalue()
-                    lines = lines_var.getvalue()[:num_lines]
-                    for line in lines:
-                        line = line.split('|')
-                        table.add_row(line)
-                    return table
-                    if num_lines < chunk_size:
-                        break
+                cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+                num_lines = num_lines_var.getvalue()
+                lines = lines_var.getvalue()[:num_lines]
+                estrelas = []
+                for line in lines:
+                    line = line.split('|')
+                    estrela = {
+                        "ID_Estrela": line[0].strip(),
+                        "Massa": line[1].strip(),
+                        "X": line[2].strip(),
+                        "Y": line[3].strip(),
+                        "Z": line[4].strip()
+                    }
+                    estrelas.append(estrela)
+                return estrelas
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                return error_obj.message  
+                return {"error": error_obj.message}
             
 
     #       Relatorio a.ii
+    # def Planetas_Sem_Classificao(self):
+    #     with self.connection.cursor() as cursor:
+    #         chunk_size = 100
+    #         query = 'cientista.planeta_nao_classificado'
+    #         table = PrettyTable()
+    #         try:
+    #             cursor.callproc("dbms_output.enable")
+    #             table.field_names = ["ID_Astro","Massa","Raio"]
+    #             cursor.callproc(query)
+    #             lines_var = cursor.arrayvar(str, chunk_size)
+    #             num_lines_var = cursor.var(int)
+    #             num_lines_var.setvalue(0, chunk_size)
+    #             while True:
+    #                 cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+    #                 self.connection.commit()
+    #                 num_lines = num_lines_var.getvalue()
+    #                 lines = lines_var.getvalue()[:num_lines]
+    #                 for line in lines:
+    #                     line = line.split('|')
+    #                     table.add_row(line)
+    #                 return table
+    #                 if num_lines < chunk_size:
+    #                     break
+    #         except oracledb.IntegrityError as e:
+    #             error_obj, = e.args
+    #             return error_obj.message  
     def Planetas_Sem_Classificao(self):
         with self.connection.cursor() as cursor:
             chunk_size = 100
             query = 'cientista.planeta_nao_classificado'
-            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                table.field_names = ["ID_Astro","Massa","Raio"]
                 cursor.callproc(query)
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
                 num_lines_var.setvalue(0, chunk_size)
-                while True:
-                    cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
-                    self.connection.commit()
-                    num_lines = num_lines_var.getvalue()
-                    lines = lines_var.getvalue()[:num_lines]
-                    for line in lines:
-                        line = line.split('|')
-                        table.add_row(line)
-                    return table
-                    if num_lines < chunk_size:
-                        break
+                cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+                num_lines = num_lines_var.getvalue()
+                lines = lines_var.getvalue()[:num_lines]
+                planetas = []
+                for line in lines:
+                    line = line.split('|')
+                    planeta = {
+                        "ID_Astro": line[0].strip(),
+                        "Massa": line[1].strip(),
+                        "Raio": line[2].strip()
+                    }
+                    planetas.append(planeta)
+                return planetas
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                return error_obj.message  
+                return {"error": error_obj.message}
             
 
 ########### funções gerais de gerencia de login #####################################
