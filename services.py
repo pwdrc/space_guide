@@ -34,9 +34,6 @@ class SpaceGuideServices:
     def get_role(self, userid):
         CPI = self.service.get_CPI_by_userid(userid)
         print(f">>>>> CPI: {CPI}")
-        if self.service.is_user_a_faction_leader(CPI):
-            return 'LIDER_FACCAO'
-
         role = self.service.get_role_by_CPI(CPI).strip()
         print(f">>>>> Role: {role}")
         return role
@@ -59,4 +56,11 @@ class SpaceGuideServices:
     def register_access(self, userid, message):
         self.service.insert_log(userid, message)
         print(">>>>> Log gravado com sucesso!")
-        
+
+    def is_leader(self, userid):
+        CPI = self.service.get_CPI_by_userid(userid)
+        return self.service.is_user_a_faction_leader(CPI)
+    
+    def update_faccao(self, oldname, newname):
+        self.service.alterar_nome_faccao(oldname, newname)
+        print(">>>>> Nome da Faccao atualizado com sucesso!")
