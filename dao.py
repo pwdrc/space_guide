@@ -1,5 +1,6 @@
 from config import AccessConfig
 import oracledb
+from prettytable import PrettyTable
 
 class DataBaseActions:
     def __init__(self):
@@ -22,10 +23,11 @@ class DataBaseActions:
             with self.connection.cursor() as cursor:
                 CPI = self.get_CPI_by_userid(userid)
                 chunk_size = 100
-                query = 'Oficial.relatorio_habitantes'            
+                query = 'Oficial.relatorio_habitantes'
+                table = PrettyTable()            
                 try:
                     cursor.callproc("dbms_output.enable")
-                    print("Planeta      Comunidade      QTD_Habitantes      Data_Ini\n")
+                    table.field_names = ["Planeta","Comunidade","QTD_Habitantes","Data_Ini"]
                     cursor.callproc(query,(CPI,))
                     lines_var = cursor.arrayvar(str, chunk_size)
                     num_lines_var = cursor.var(int)
@@ -35,12 +37,14 @@ class DataBaseActions:
                         num_lines = num_lines_var.getvalue()
                         lines = lines_var.getvalue()[:num_lines]
                         for line in lines:
-                            print(line or "")
+                            line = line.split('|')
+                            table.add_row(line)
+                        return table
                         if num_lines < chunk_size:
                             break
                 except oracledb.IntegrityError as e:        
                     error_obj, = e.args
-                    print(error_obj.message)
+                    return  error_obj.message
                 self.connection.commit()
 
 ######################################################################
@@ -54,9 +58,11 @@ class DataBaseActions:
             try:
                 cursor.callproc(query,(NomeAntigo,NomeNovo))
             except oracledb.IntegrityError as e:   
-                print(e)
+                error_obj, = e.args
+                return error_obj.message
             else:
-                print("Alteracao realizada com sucesso")
+                msg ="Alteracao realizada com sucesso"
+                return msg
             self.connection.commit()
 
     #       Funcao a.ii
@@ -68,9 +74,10 @@ class DataBaseActions:
                 cursor.callproc(query,(CPI,CPI_Novo))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)
+                return error_obj.message
             else:
-                print("O novo lider foi indicado com sucesso")    
+                msg = "O novo lider foi indicado com sucesso"
+                return msg
             self.connection.commit()
     
     #       Funcao a.iii
@@ -82,9 +89,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Faccao,Especie,Comunidade))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)
+                return error_obj.message
             else:
-                print("A Comunidade foi credenciada com sucesso")    
+                msg = "A Comunidade foi credenciada com sucesso"
+                return msg    
 
             self.connection.commit()
 
@@ -97,9 +105,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Faccao,Nacao))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)
+                return error_obj.message
             else:
-                print("A Faccao foi removida da Nacao com sucesso")    
+                msg = "A Faccao foi removida da Nacao com sucesso"
+                return msg  
             self.connection.commit()
 
 
@@ -109,9 +118,10 @@ class DataBaseActions:
             Faccao = self.get_faccao_by_userid(userid)
             chunk_size = 100
             query = 'Pacote_Lider.relatorio_comunidades'
+            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                print("Planeta      Comunidade      Especie      QTD_Habitantes     Nacao      Data_Ini\n")
+                table.field_names = ["Planeta","Comunidade","Especie","QTD_Habitantes","Nacao","Data_Ini"]
                 cursor.callproc(query,(Faccao,))
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
@@ -121,12 +131,14 @@ class DataBaseActions:
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
-                        print(line or "")
+                        line = line.split('|')
+                        table.add_row(line)
+                    return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)  
+                return error_obj.message  
             self.connection.commit()
 
 
@@ -144,9 +156,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Nacao,Federacao))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message 
             else:
-                print('Insercao Completa com sucesso') 
+                msg = 'Insercao Completa com sucesso'
+                return msg 
             #finalizacao de transacao
             self.connection.commit()
 
@@ -161,9 +174,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Nacao,))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message
             else:
-                print('Remocao Completa com sucesso') 
+                msg = 'Remocao Completa com sucesso'
+                return msg
             #finalizacao de transacao
             self.connection.commit()
 
@@ -176,9 +190,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Nacao,Federacao))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message 
             else:
-                print('Criacao Completa com sucesso') 
+                msg = 'Criacao Completa com sucesso'
+                return msg 
             self.connection.commit()
 
     #       Funcao b
@@ -190,9 +205,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Nacao,Planeta))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message 
             else:
-                print('Insercao Completa com sucesso') 
+                msg = 'Insercao Completa com sucesso'
+                return msg 
             self.connection.commit()
 
     #       Relatorio a.i
@@ -201,9 +217,10 @@ class DataBaseActions:
             Faccao = self.get_faccao_by_userid(userid)
             chunk_size = 100
             query = 'Comandante.recupera_informacoes'
+            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                print("Planeta      Especie      Inteligente     Comunidade     Qtd_Habitantes      Faccao\n")
+                table.field_names = ["Planeta","Especie","Inteligente","Comunidade","QTD_Habitantes","Faccao"]
                 cursor.callproc(query,(Faccao,))
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
@@ -213,12 +230,14 @@ class DataBaseActions:
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
-                        print(line or "")
+                        line = line.split('|')
+                        table.add_row(line)
+                    return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)  
+                return error_obj.message 
             self.connection.commit()
     
     #       Relatorio a.ii
@@ -228,9 +247,10 @@ class DataBaseActions:
             DIST_MAX = 100
             chunk_size = 100
             query = 'comandante.planetas_pontenciais'
+            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                print("ID_Astro                 Raio     Habitacoes          Dist_Nacao\n")
+                table.field_names = ["ID_Astro","Raio","Habitacoes","Dist_Nacao"]
                 cursor.callproc(query,(CPI,DIST_MAX))
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
@@ -240,12 +260,14 @@ class DataBaseActions:
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
-                        print(line or "")
+                        line = line.split('|')
+                        table.add_row(line)
+                    return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)  
+                return error_obj.message 
             self.connection.commit()
 
 
@@ -260,9 +282,10 @@ class DataBaseActions:
                 cursor.callproc(query,(ID,Nome,Classificao,Massa,X,Y,Z))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message 
             else:
-                print('Estrela criada com sucesso') 
+                msg = 'Estrela criada com sucesso'
+                return msg
             self.connection.commit()
 
     #       Funcao a.2
@@ -273,9 +296,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Estrela,Nome))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message 
             else:
-                print('Sistema criado com sucesso') 
+                msg = 'Sistema criado com sucesso'
+                return msg 
             self.connection.commit()
 
     #       Funcao a.3
@@ -286,9 +310,10 @@ class DataBaseActions:
                 cursor.callproc(query,(Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo))
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message) 
+                return error_obj.message 
             else:
-                print('Orbita criada com sucesso') 
+                msg = 'Orbita criada com sucesso'
+                return msg 
             self.connection.commit()
 
     #       Relatorio a.i
@@ -296,9 +321,10 @@ class DataBaseActions:
         with self.connection.cursor() as cursor:
             chunk_size = 100
             query = 'cientista.estrela_nao_classificada'
+            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                print("ID_Estrela            Massa                      x                y               z\n")
+                table.field_names = ["ID_Estrela","Massa","X","Y","Z"]
                 cursor.callproc(query)
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
@@ -308,12 +334,14 @@ class DataBaseActions:
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
-                        print(line or "")
+                        line = line.split('|')
+                        table.add_row(line)
+                    return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)  
+                return error_obj.message  
             self.connection.commit()
 
     #       Relatorio a.ii
@@ -321,9 +349,10 @@ class DataBaseActions:
         with self.connection.cursor() as cursor:
             chunk_size = 100
             query = 'cientista.planeta_nao_classificado'
+            table = PrettyTable()
             try:
                 cursor.callproc("dbms_output.enable")
-                print("ID_Astro           Massa         Raio\n")
+                table.field_names = ["ID_Astro","Massa","Raio"]
                 cursor.callproc(query)
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)
@@ -333,12 +362,14 @@ class DataBaseActions:
                     num_lines = num_lines_var.getvalue()
                     lines = lines_var.getvalue()[:num_lines]
                     for line in lines:
-                        print(line or "")
+                        line = line.split('|')
+                        table.add_row(line)
+                    return table
                     if num_lines < chunk_size:
                         break
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
-                print(error_obj.message)  
+                return error_obj.message  
             self.connection.commit()
 
 
