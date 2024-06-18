@@ -14,7 +14,7 @@
             <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
         </nav>
         <div class="mt-4 mb-4">
-            <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Líder da Facção {{ faccao }}</h3>
+            <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Líder da Facção</h3>
             <div>
                 <div class="flex justify-center items-center mt-4 bg-gray-100">
                     <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
@@ -23,6 +23,16 @@
                             <br>
                             <input class="bg-gray-100 py-2 px-4" type="text" name="novo_nome" placeholder="Novo nome da facção" required>
                             <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                            <!-- exibir mensagem flash da operacao -->
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                              <ul>
+                                {% for message in messages %}
+                                  <li>{{ message }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          {% endwith %}
                         </form>
                     </div>
                 </div>
@@ -34,6 +44,15 @@
                             <br>
                             <input class="bg-gray-100 py-2 px-4" type="text" name="novo_lider" placeholder="Nome do novo líder" required>
                             <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                              <ul>
+                                {% for message in messages %}
+                                  <li>{{ message }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          {% endwith %}
                         </form>
                     </div>
                 </div>
@@ -46,6 +65,15 @@
                             <input class="bg-gray-100 py-2 px-4 flex" type="text" name="especie" placeholder="Nome da especie" required>
                             <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="comunidade" placeholder="Nome da com" required>
                             <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                              <ul>
+                                {% for message in messages %}
+                                  <li>{{ message }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          {% endwith %}
                         </form>
                     </div>
                 </div>
@@ -56,10 +84,20 @@
                             <h4 class="text-2xl py-2 px-4 mb-4">Remover nação</h4>
                             <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nacao" placeholder="Nome da nação" required>
                             <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                              <ul>
+                                {% for message in messages %}
+                                  <li>{{ message }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          {% endwith %}
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        
     </body>
 </html>

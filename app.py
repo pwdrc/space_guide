@@ -186,12 +186,12 @@ def alterar_nome_faccao():
     try:
         novo_nome = request.form['novo_nome']
         action.update_faccao(session.get('user_id'), novo_nome)
-        #flash('Nome da facção alterado com sucesso!', 'success')
-        session['msg'] = 'Nome da facção alterado com sucesso!'
+        flash('Nome da facção alterado com sucesso!', 'success')
+        #session['msg'] = 'Nome da facção alterado com sucesso!'
         return redirect(url_for('leader'))
     except Exception as e:
-        # flash(f'Erro ao alterar nome da facção: {e}', 'error')
-        session['msg'] = f'Erro ao alterar nome da facção: {e}'
+        flash(f'Erro ao alterar nome da facção: {e}', 'error')
+        #session['msg'] = f'Erro ao alterar nome da facção: {e}'
         return redirect(url_for('leader'))
 
 @app.route('/lider/indicar_lider', methods=['POST'])
