@@ -33,15 +33,17 @@
                         <br>
                         <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="add_federacao" placeholder="Nome da federação" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                              <ul>
-                                {% for message in messages %}
-                                  <li>{{ message }}</li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                        {% endwith %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_5' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_5' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -54,15 +56,17 @@
                         <p class="text-lg py-2 px-4">Para excluir sua nação da federação, digite "EXCLUIR" e clique em "ENVIAR".</p>
                         <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="rm_federacao" placeholder="EXCLUIR" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                              <ul>
-                                {% for message in messages %}
-                                  <li>{{ message }}</li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                        {% endwith %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_6' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_6' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -74,15 +78,17 @@
                         <br>
                         <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nova_federacao" placeholder="Nome da nova federacao" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                              <ul>
-                                {% for message in messages %}
-                                  <li>{{ message }}</li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                        {% endwith %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_7' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_7' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -121,15 +127,17 @@
                         <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="Y" placeholder="Y" required>
                         <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="Z" placeholder="Z" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                              <ul>
-                                {% for message in messages %}
-                                  <li>{{ message }}</li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                        {% endwith %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_8' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_8' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -142,15 +150,17 @@
                         <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="estrela" placeholder="Nome da estrela" required>
                         <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="sistema" placeholder="Nome do sistema" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                              <ul>
-                                {% for message in messages %}
-                                  <li>{{ message }}</li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                        {% endwith %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_9' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_9' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -166,15 +176,17 @@
                         <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="distancia_max" placeholder="Distância máxima" required>
                         <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="periodo" placeholder="Período" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                              <ul>
-                                {% for message in messages %}
-                                  <li>{{ message }}</li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                        {% endwith %}
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_10' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_10' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             {% endif %}

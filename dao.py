@@ -96,9 +96,7 @@ class DataBaseActions:
                 return error_obj.message
             else:
                 msg = "A Comunidade foi credenciada com sucesso"
-                return msg    
-
-            
+                return msg          
 
     #       Funcao b
     def Remove_Faccao_Naccao(self,userid,Nacao):
@@ -298,9 +296,9 @@ class DataBaseActions:
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
-            else:
-                msg = 'Estrela criada com sucesso'
-                return msg
+            
+            msg = 'Estrela criada com sucesso'
+            return msg
             
 
     #       Funcao a.2
@@ -313,9 +311,9 @@ class DataBaseActions:
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
-            else:
-                msg = 'Sistema criado com sucesso'
-                return msg 
+            
+            msg = 'Sistema criado com sucesso'
+            return msg 
             
 
     #       Funcao a.3
@@ -328,9 +326,9 @@ class DataBaseActions:
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
                 return error_obj.message 
-            else:
-                msg = 'Orbita criada com sucesso'
-                return msg 
+            
+            msg = 'Orbita criada com sucesso'
+            return msg 
             
 
     #       Relatorio a.i
@@ -391,9 +389,7 @@ class DataBaseActions:
                 return error_obj.message  
             
 
-
 ########### funções gerais de gerencia de login #####################################
-    
 
     def fill_table_users(self):
         # criar um procedimento (PL/SQL) para encontrar líderes sem respectivas tuplas na tabela USERS e inserí-los com uma senha padrão

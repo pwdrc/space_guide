@@ -186,11 +186,12 @@ def alterar_nome_faccao():
     try:
         novo_nome = request.form['novo_nome']
         action.update_faccao(session.get('user_id'), novo_nome)
-        flash('Nome da facção alterado com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_1')
+
         #session['msg'] = 'Nome da facção alterado com sucesso!'
         return redirect(url_for('leader'))
     except Exception as e:
-        flash(f'Erro ao alterar nome da facção: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_1')
         #session['msg'] = f'Erro ao alterar nome da facção: {e}'
         return redirect(url_for('leader'))
 
@@ -200,10 +201,10 @@ def indicar_lider():
     try:
         novo_lider = request.form['novo_lider']
         action.update_lider(session.get('user_id'), novo_lider)
-        flash('Líder indicado com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_2')
         return redirect(url_for('leader'))
     except Exception as e:
-        flash(f'Erro ao indicar novo líder: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_2')
         return redirect(url_for('leader'))
 
 @app.route('/lider/credenciar_comunidade', methods=['POST'])
@@ -213,10 +214,10 @@ def credenciar_comunidade():
         especie = request.form['especie']
         comunidade = request.form['comunidade']
         action.add_comunidade(session.get('user_id'), especie, comunidade)
-        flash('Comunidade credenciada com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_3')
         return redirect(url_for('leader'))
     except Exception as e:
-        flash(f'Erro ao credenciar comunidade: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_3')
         return redirect(url_for('leader'))
 
 @app.route('/lider/remover_nacao', methods=['POST'])
@@ -225,10 +226,10 @@ def remover_nacao():
     try:
         nacao = request.form['nacao']
         action.rm_nacao(session.get('user_id'), nacao)
-        flash('Nação removida com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_4')
         return redirect(url_for('leader'))
     except Exception as e:
-        flash(f'Erro ao remover nação: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_4')
         return redirect(url_for('leader'))
 
 # COMANDANTE
@@ -239,10 +240,10 @@ def add_nacao_federacao():
     try:
         federacao = request.form['add_federacao']
         action.add_nacao_federacao(session.get('user_id'), federacao)
-        flash('Nação adicionada à federação com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_5')
         return redirect(url_for('home'))
     except Exception as e:
-        flash(f'Erro ao adicionar nação à federação: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_5')
         return redirect(url_for('home'))
 
 @app.route('/comandante/rm_nacao_federacao', methods=['POST'])
@@ -252,12 +253,12 @@ def rm_nacao_federacao():
         excluir = request.form['rm_federacao']
         if excluir == 'EXCLUIR':
             action.rm_nacao_federacao(session.get('user_id'))
-            flash('Federação removida com sucesso!', 'success')
+            flash('Ação realizada com sucesso!', 'SUCESSO_6')
         else:
-            flash('Operação cancelada.', 'info')
+            flash('Erro ao realizar ação.', 'ERRO_6')
         return redirect(url_for('home'))
     except Exception as e:
-        flash(f'Erro ao remover federação: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_6')
         return redirect(url_for('home'))
 
 @app.route('/comandante/criar_federacao', methods=['POST'])
@@ -266,10 +267,10 @@ def criar_federacao():
     try:
         nome = request.form['nova_federacao']
         action.criar_nacao_federacao(session.get('user_id'), nome)
-        flash('Federação criada com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_7')
         return redirect(url_for('home'))
     except Exception as e:
-        flash(f'Erro ao criar federação: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_7')
         return redirect(url_for('home'))
 
 # CRUD CIENTISTA para gerenciar estrelas
@@ -299,10 +300,10 @@ def add_estrela():
         y = request.form['Y']
         z = request.form['Z']
         action.add_estrela(id, nome, classificacao, massa, x, y, z)
-        flash('Estrela adicionada com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_8')
         return redirect(url_for('home'))
     except Exception as e:
-        flash(f'Erro ao adicionar estrela: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_8')
         return redirect(url_for('home'))
     
 @app.route('/cientista/add_sistema', methods=['POST'])
@@ -312,10 +313,10 @@ def add_sistema():
         estrela = request.form['estrela']
         nome = request.form['sistema']
         action.add_sistema(estrela, nome)
-        flash('Sistema adicionado com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_9')
         return redirect(url_for('home'))
     except Exception as e:
-        flash(f'Erro ao adicionar sistema: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_9')
         return redirect(url_for('home'))
 
 @app.route('/cientista/add_orbita_estrela', methods=['POST'])
@@ -328,10 +329,10 @@ def add_orbita_estrela():
         dist_max = request.form['distancia_max']
         periodo = request.form['periodo']
         action.add_orbita_estrela(orbitante, orbitada, dist_min, dist_max, periodo)
-        flash('Orbita adicionada com sucesso!', 'success')
+        flash('Ação realizada com sucesso!', 'SUCESSO_10')
         return redirect(url_for('home'))
     except Exception as e:
-        flash(f'Erro ao adicionar orbita: {e}', 'error')
+        flash('Erro ao realizar ação.', 'ERRO_10')
         return redirect(url_for('home'))
     
 if __name__ == '__main__':
