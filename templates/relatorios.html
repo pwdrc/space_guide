@@ -67,9 +67,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <form action="{{ url_for('download_report', report_type='oficial') }}" method="POST" class="text-center mt-4">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download em CSV</button>
-        </form>
+       
         {% endif %}
         
         <!-- Relatório para Comandante -->
@@ -101,9 +99,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <form action="{{ url_for('download_report', report_type='comandante') }}" method="POST" class="text-center mt-4">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Download em CSV</button>
-        </form>
+       
         {% endif %}
     </div>
 </body>

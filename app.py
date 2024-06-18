@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, session
+from flask import Flask, render_template, redirect, send_file, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from forms import LoginForm
 from flask import request
@@ -7,7 +7,6 @@ from datetime import datetime
 import csv
 from io import StringIO
 import os
-from prettytable import PrettyTable
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -156,40 +155,6 @@ def relatorios():
         planetas_sem_classificacao=r_planetas_sem_classificacao
     )
 
-@app.route('/download_report', methods=['POST'])
-@login_required
-def download_report():
-    report_type = request.form.get('report_type')
-    user_role = session.get('role')
-    user_name = session.get('name')
-
-    if report_type == 'leader' and session.get('is_leader'):
-        comunidades = action.get_comunidades_by_faccao(session.get('faccao'))
-        csv_data = [["Nação", "Espécie", "Planeta", "Sistema"]]
-        csv_data.extend([[c.nacao, c.especie, c.planeta, c.sistema] for c in comunidades])
-    elif report_type == 'oficial' and user_role == 'OFICIAL':
-        habitantes = action.get_habitantes_by_nacao(session.get('nacao'))
-        csv_data = [["Habitação", "Espécie", "Facção", "Planeta", "Sistema"]]
-        csv_data.extend([[h.habitacao, h.especie, h.faccao, h.planeta, h.sistema] for h in habitantes])
-    elif report_type == 'comandante' and user_role == 'COMANDANTE':
-        planetas = action.get_planetas_dominados()
-        csv_data = [["Planeta", "Nação Dominante", "Comunidades", "Espécies", "Habitantes", "Facções", "Facção Majoritária"]]
-        csv_data.extend([[p.nome, p.nacao_dominante, p.comunidades, p.especies, p.habitantes, p.faccoes, p.faccao_majoritaria] for p in planetas])
-    else:
-        flash("Acesso não autorizado para download desse relatório.")
-        return redirect(url_for('relatorios'))
-
-    si = StringIO()
-    cw = csv.writer(si)
-    cw.writerows(csv_data)
-    si.seek(0)
-    
-    return send_file(
-        si,
-        mimetype='text/csv',
-        as_attachment=True,
-        attachment_filename=f'relatorio_{report_type}_{user_name}.csv'
-    )
 # @login_required
 # def relatorios():
 #     user_role = session.get('role')
@@ -221,10 +186,12 @@ def alterar_nome_faccao():
     try:
         novo_nome = request.form['novo_nome']
         action.update_faccao(session.get('user_id'), novo_nome)
-        flash('Nome da facção alterado com sucesso!', 'success')
+        #flash('Nome da facção alterado com sucesso!', 'success')
+        session['msg'] = 'Nome da facção alterado com sucesso!'
         return redirect(url_for('leader'))
     except Exception as e:
-        flash(f'Erro ao alterar nome da facção: {e}', 'error')
+        # flash(f'Erro ao alterar nome da facção: {e}', 'error')
+        session['msg'] = f'Erro ao alterar nome da facção: {e}'
         return redirect(url_for('leader'))
 
 @app.route('/lider/indicar_lider', methods=['POST'])
