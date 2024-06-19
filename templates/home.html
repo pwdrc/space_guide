@@ -106,10 +106,10 @@
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
                         {% with messages = get_flashed_messages(with_categories=true) %}
                         {% for category, message in messages %}
-                          {% if category == 'SUCESSO_7' %}
+                          {% if category == 'SUCESSO_11' %}
                             <!-- Exibir mensagem de sucesso -->
                             <div class="text-blue-500 font-bold">{{ message }}</div>
-                          {% elif category == 'ERRO_7' %}
+                          {% elif category == 'ERRO_11' %}
                             <!-- Exibir mensagem de erro -->
                             <div class="text-red-500 font-bold">{{ message }}</div>
                           {% endif %}

@@ -295,10 +295,10 @@ def inserir_dominacao():
     try:
         nome = request.form['nova_dominacao']
         action.add_dominancia(session.get('user_id'), nome)
-        flash('Ação realizada com sucesso!', 'SUCESSO_7')
+        flash('Ação realizada com sucesso!', 'SUCESSO_11')
         return redirect(url_for('home'))
     except Exception as e:
-        flash('Erro ao realizar ação.', 'ERRO_7')
+        flash('Erro ao realizar ação.', 'ERRO_11')
         return redirect(url_for('home'))
 
 # CRUD CIENTISTA para gerenciar estrelas
