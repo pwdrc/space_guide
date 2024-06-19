@@ -1,3 +1,4 @@
+from time import sleep
 from flask import Flask, render_template, redirect, send_file, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from forms import LoginForm
@@ -71,6 +72,7 @@ def logout():
     session.pop('name', None)
     session.pop('faccao', None)
     session.pop('is_leader', None)
+    session.pop('user_id', None)
     return redirect(url_for('login'))
 
 @app.route('/select_profile', methods=['GET', 'POST'])
@@ -79,6 +81,8 @@ def select_profile():
     if request.method == 'POST':
         profile = request.form.get('profile')
         print(f"Perfil selecionado: {profile}")  # Log para verificar o valor de profile
+
+        is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
 
         if profile == 'leader':
             # Redirecione para a rota correspondente ao perfil de líder
@@ -91,7 +95,7 @@ def select_profile():
             # Redirecione para a rota correspondente ao outro perfil
             name = session.get('name')
             print(f"Redirecionando para /home com name: {name}")  # Log para depuração
-            return redirect(url_for('home', name=name))
+            return redirect(url_for('home', name=name, is_leader=is_leader))
         
         else:
             flash('Perfil inválido selecionado.', 'error')
@@ -116,15 +120,15 @@ def home():
     #is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
     #if is_leader:
     #    return redirect(url_for('select_profile'))    
-    
+    is_leader = session.get('is_leader', False)
     user_name = session.get('name')
     if(user_role == 'CIENTISTA'):
-        return render_template('home.html', role=user_role, name=user_name)
+        return render_template('home.html', role=user_role, name=user_name, is_leader=is_leader)
     if(user_role == 'OFICIAL'):
-        return render_template('home.html', role=user_role, name=user_name)
+        return render_template('home.html', role=user_role, name=user_name, is_leader=is_leader)
     if(user_role == 'COMANDANTE'):
         user_nacao = session.get('nacao')
-        return render_template('home.html', role=user_role, name=user_name, nacao=user_nacao)
+        return render_template('home.html', role=user_role, name=user_name, nacao=user_nacao, is_leader=is_leader)
     return render_template('home.html', role=user_role, name=user_name)
 
 @app.route('/relatorios')
@@ -196,6 +200,7 @@ def alterar_nome_faccao():
         #session['msg'] = 'Nome da facção alterado com sucesso!'
         return redirect(url_for('leader'))
     except Exception as e:
+        print(f'Erro ao alterar nome da facção: {e}')
         flash('Erro ao realizar ação.', 'ERRO_1')
         #session['msg'] = f'Erro ao alterar nome da facção: {e}'
         return redirect(url_for('leader'))
@@ -206,7 +211,10 @@ def indicar_lider():
     try:
         novo_lider = request.form['novo_lider']
         action.update_lider(session.get('user_id'), novo_lider)
-        flash('Ação realizada com sucesso!', 'SUCESSO_2')
+        flash('Ação realizada com sucesso! Você foi deslogado...', 'SUCESSO_2')
+        sleep(2)
+        logout_user()
+
         return redirect(url_for('leader'))
     except Exception as e:
         flash('Erro ao realizar ação.', 'ERRO_2')
