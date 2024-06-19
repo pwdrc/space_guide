@@ -19,15 +19,43 @@ class DataBaseActions:
 ######################################################################
 ########### funcoes de oficial #######################################
 
+#    def Relatorio_Habitacao(self,userid):
+#            with self.connection.cursor() as cursor:
+#                CPI = self.get_CPI_by_userid(userid)
+#                chunk_size = 100
+#                query = 'Oficial.relatorio_habitantes'
+#                table = PrettyTable()            
+#                try:
+#                    cursor.callproc("dbms_output.enable")
+#                    table.field_names = ["Planeta","Comunidade","QTD_Habitantes","Data_Ini"]
+#                    cursor.callproc(query,(CPI,))
+#                    lines_var = cursor.arrayvar(str, chunk_size)
+#                    num_lines_var = cursor.var(int)
+#                    num_lines_var.setvalue(0, chunk_size)
+#                    while True:
+#                        cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+#                        num_lines = num_lines_var.getvalue()
+#                        lines = lines_var.getvalue()[:num_lines]
+#                        for line in lines:
+#                            line = line.split('|')
+#                            table.add_row(line)
+#                        self.connection.commit()
+#                        return table 
+#                        if num_lines < chunk_size:
+#                            break
+#                except oracledb.IntegrityError as e:        
+#                    error_obj, = e.args
+#                   return  error_obj.message
+                
+
     def Relatorio_Habitacao(self,userid):
             with self.connection.cursor() as cursor:
                 CPI = self.get_CPI_by_userid(userid)
                 chunk_size = 100
                 query = 'Oficial.relatorio_habitantes'
-                table = PrettyTable()            
+                Habitacoes=[]            
                 try:
                     cursor.callproc("dbms_output.enable")
-                    table.field_names = ["Planeta","Comunidade","QTD_Habitantes","Data_Ini"]
                     cursor.callproc(query,(CPI,))
                     lines_var = cursor.arrayvar(str, chunk_size)
                     num_lines_var = cursor.var(int)
@@ -37,10 +65,16 @@ class DataBaseActions:
                         num_lines = num_lines_var.getvalue()
                         lines = lines_var.getvalue()[:num_lines]
                         for line in lines:
-                            line = line.split('|')
-                            table.add_row(line)
+                            fields = [field.strip() for field in line.split('|')]
+                            habitacao = {
+                                "Planeta": fields[0],
+                                "Comunidade": fields[1],
+                                "QTD_Habitantes": fields[2],
+                                "Data_Ini": fields[3]
+                            }
+                            Habitacoes.append(habitacao)
                         self.connection.commit()
-                        return table 
+                        return Habitacoes
                         if num_lines < chunk_size:
                             break
                 except oracledb.IntegrityError as e:        
