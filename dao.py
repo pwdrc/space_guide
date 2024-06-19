@@ -74,9 +74,10 @@ class DataBaseActions:
                             }
                             Habitacoes.append(habitacao)
                         self.connection.commit()
+                        print(Habitacoes)
                         return Habitacoes
-                        if num_lines < chunk_size:
-                            break
+                    #if num_lines < chunk_size:
+                    #    break
                 except oracledb.IntegrityError as e:        
                     error_obj, = e.args
                     return  error_obj.message
@@ -208,6 +209,7 @@ class DataBaseActions:
                         comunidades.append(comunidade)
                     if num_lines < chunk_size:
                         break
+                print(comunidades)
                 return comunidades  # Return the list of dictionaries
             except oracledb.IntegrityError as e:
                 return str(e)
@@ -351,7 +353,7 @@ class DataBaseActions:
 
                     if num_lines < chunk_size:
                         break
-
+                print(data)
                 return data
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
@@ -422,7 +424,7 @@ class DataBaseActions:
 
                     if num_lines < chunk_size:
                         break
-
+                print(data)
                 return data
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
@@ -529,6 +531,7 @@ class DataBaseActions:
                         "Z": line[4].strip()
                     }
                     estrelas.append(estrela)
+                print(estrelas)
                 return estrelas
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
@@ -584,6 +587,7 @@ class DataBaseActions:
                         "Raio": line[2].strip()
                     }
                     planetas.append(planeta)
+                print(planetas)
                 return planetas
             except oracledb.IntegrityError as e:
                 error_obj, = e.args
