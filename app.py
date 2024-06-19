@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, send_file, url_for, flash, session
+from time import sleep
+from flask import Flask, jsonify, render_template, redirect, send_file, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from forms import LoginForm
 from flask import request
@@ -71,6 +72,7 @@ def logout():
     session.pop('name', None)
     session.pop('faccao', None)
     session.pop('is_leader', None)
+    session.pop('user_id', None)
     return redirect(url_for('login'))
 
 @app.route('/select_profile', methods=['GET', 'POST'])
@@ -79,6 +81,8 @@ def select_profile():
     if request.method == 'POST':
         profile = request.form.get('profile')
         print(f"Perfil selecionado: {profile}")  # Log para verificar o valor de profile
+
+        is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
 
         if profile == 'leader':
             # Redirecione para a rota correspondente ao perfil de líder
@@ -91,7 +95,7 @@ def select_profile():
             # Redirecione para a rota correspondente ao outro perfil
             name = session.get('name')
             print(f"Redirecionando para /home com name: {name}")  # Log para depuração
-            return redirect(url_for('home', name=name))
+            return redirect(url_for('home', name=name, is_leader=is_leader))
         
         else:
             flash('Perfil inválido selecionado.', 'error')
@@ -116,31 +120,38 @@ def home():
     #is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
     #if is_leader:
     #    return redirect(url_for('select_profile'))    
-    
+    is_leader = session.get('is_leader', False)
     user_name = session.get('name')
     if(user_role == 'CIENTISTA'):
-        return render_template('home.html', role=user_role, name=user_name)
+        return render_template('home.html', role=user_role, name=user_name, is_leader=is_leader)
     if(user_role == 'OFICIAL'):
-        return render_template('home.html', role=user_role, name=user_name)
+        return render_template('home.html', role=user_role, name=user_name, is_leader=is_leader)
     if(user_role == 'COMANDANTE'):
         user_nacao = session.get('nacao')
-        return render_template('home.html', role=user_role, name=user_name, nacao=user_nacao)
+        return render_template('home.html', role=user_role, name=user_name, nacao=user_nacao, is_leader=is_leader)
     return render_template('home.html', role=user_role, name=user_name)
 
-@app.route('/relatorios')
+@app.route('/relatorios', methods=['GET', 'POST'])
 @login_required
 def relatorios():
     user_role = session.get('role')
     user_name = session.get('name')
     is_leader = session.get('is_leader', False)
 
+    # obter valor do usuario via html para max_distancia em relatorio_planetas_potenciais
+    # post
+
     # comunidades = action.get_comunidades_by_faccao(session.get('faccao')) if is_leader else []
+    r_habitacoes = action.relatorio_habitacao(session.get('user_id')) if user_role == 'OFICIAL' else []
     r_comunidades = action.relatorio_comunidades(session.get('user_id')) if is_leader else []
     r_nacoes = action.relatorio_nacoes(session.get('user_id')) if user_role == 'COMANDANTE' else []
     r_planetas_potenciais = action.relatorio_planetas_potenciais(session.get('user_id'), 100) if user_role == 'COMANDANTE' else []
-    r_estrelas_sem_classificacao = action.relatorio_estrela_sem_classificacao if user_role == 'CIENTISTA' else []
-    r_planetas_sem_classificacao = action.relatorio_planeta_sem_classificacao if user_role == 'CIENTISTA' else []
+    # receber um valor para passar como parametro em r_planetas_potenciais(session.get('user_id'), valor)
 
+    r_estrelas_sem_classificacao = action.relatorio_estrela_sem_classificacao() if user_role == 'CIENTISTA' else []
+    r_planetas_sem_classificacao = action.relatorio_planeta_sem_classificacao() if user_role == 'CIENTISTA' else []
+
+    print(f">>>>> Relatório de Habitacoes: {r_habitacoes}")
     print(f">>>>> Relatório de comunidades: {r_comunidades}")
     print(f">>>>> Relatório de nações: {r_nacoes}")
     print(f">>>>> Relatório de planetas potenciais: {r_planetas_potenciais}")
@@ -153,36 +164,30 @@ def relatorios():
         is_leader=is_leader,
         role=user_role,
         name=user_name,
+        habitacoes=r_habitacoes,
         comunidades=r_comunidades,
         nacoes=r_nacoes,
         planetas_potenciais=r_planetas_potenciais,
         estrelas_sem_classificacao=r_estrelas_sem_classificacao,
         planetas_sem_classificacao=r_planetas_sem_classificacao
-    )
+    )   
 
-# @login_required
-# def relatorios():
-#     user_role = session.get('role')
-#     user_name = session.get('name')
-#     is_leader = session.get('is_leader', False)  # Assume False como padrão se não estiver definido
-#     # if user_role == 'LIDER_FACCAO':
-
-#     #     user_faccao = session.get('faccao')
-#     #     # gerar um dict de comunidades só para teste
-#     comunidade = {'nome': 'comunidade1', 'nacao': 'nacao1', 'especie': 'especie1', 'planeta': 'planeta1', 'sistema': 'sistema1'}
-#     comunidades = [comunidade, comunidade, comunidade]
-#     return render_template('relatorios.html', is_leader=is_leader, role=user_role, name=user_name, comunidades=comunidades)
-
-# # download_report lider_faccao
-# @app.route('/download_report')
-# @login_required
-# def download_report():
-#     user_role = session.get('role')
-#     user_name = session.get('name')
-#     if user_role == 'LIDER_FACCAO':
-#         # gerar um relatório em excel
-        
-
+@app.route('/atualizar_planetas', methods=['POST'])
+def atualizar_planetas():
+    max_dist = request.json.get('max_dist')
+    
+    # Chama a função que obtém os planetas com base no max_dist
+    planetas = action.relatorio_planetas_potenciais(session.get('user_id'), max_dist)
+    
+    # Verifica se a função retornou um erro
+    if "error" in planetas:
+        return jsonify(planetas), 500
+    
+    # Log dos planetas para depuração
+    print("Planetas retornados pelo backend:", planetas)
+    
+    # Retorna os planetas como JSON
+    return jsonify(planetas=planetas)
 ####################### lider faccao ######################
 
 @app.route('/lider/alterar_nome', methods=['POST'])
@@ -196,6 +201,7 @@ def alterar_nome_faccao():
         #session['msg'] = 'Nome da facção alterado com sucesso!'
         return redirect(url_for('leader'))
     except Exception as e:
+        print(f'Erro ao alterar nome da facção: {e}')
         flash('Erro ao realizar ação.', 'ERRO_1')
         #session['msg'] = f'Erro ao alterar nome da facção: {e}'
         return redirect(url_for('leader'))
@@ -206,7 +212,10 @@ def indicar_lider():
     try:
         novo_lider = request.form['novo_lider']
         action.update_lider(session.get('user_id'), novo_lider)
-        flash('Ação realizada com sucesso!', 'SUCESSO_2')
+        flash('Ação realizada com sucesso! Você foi deslogado...', 'SUCESSO_2')
+        sleep(2)
+        logout_user()
+
         return redirect(url_for('leader'))
     except Exception as e:
         flash('Erro ao realizar ação.', 'ERRO_2')
@@ -277,22 +286,21 @@ def criar_federacao():
     except Exception as e:
         flash('Erro ao realizar ação.', 'ERRO_7')
         return redirect(url_for('home'))
+    
+@app.route('/comandante/inserir_dominacao', methods=['POST'])
+@login_required
+def inserir_dominacao():
+    try:
+        nome = request.form['nova_dominacao']
+        action.add_dominancia(session.get('user_id'), nome)
+        flash('Ação realizada com sucesso!', 'SUCESSO_11')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash('Erro ao realizar ação.', 'ERRO_11')
+        return redirect(url_for('home'))
+    
+####################### cientista ######################
 
-# CRUD CIENTISTA para gerenciar estrelas
-# def add_estrela(self,ID,Nome,Classificao,Massa,X,Y,Z):
-#         self.service.Cria_Estrela(ID,Nome,Classificao,Massa,X,Y,Z)
-
-#     def add_sistema(self,Estrela,Nome):
-#         self.service.Cria_Sistema(Estrela,Nome)
-    
-#     def add_orbita_estrela(self,Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo):
-#         self.service.Cria_Oribta_Estrela(Orbitante,Orbitada,Dist_Min,Dist_Max,Periodo)
-    
-#     def relatorio_estrela_sem_classificacao(self):
-#         return self.service.Estrelas_Sem_Classificao()
-    
-#     def relatorio_planeta_sem_classificacao(self):
-#         return self.service.Planetas_Sem_Classificao()
 @app.route('/cientista/add_estrela', methods=['POST'])
 @login_required
 def add_estrela():

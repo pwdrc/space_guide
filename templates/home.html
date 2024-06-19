@@ -6,7 +6,11 @@
     </head>
     <body class="bg-gray-100">
         <nav class="flex items-center bg-blue-700 mb-4">
+            {% if not is_leader %}
             <a href="/home" class="text-white font-bold py-2 px-4">Home</a>
+            {% else %}
+            <a href="/select_profile" class="text-white font-bold py-2 px-4">Alterar perfil</a>
+            {% endif %}
             <p class="text-xl text-white font-bold py-2 px-4">usuário: {{ name }}</p>
             <!-- Spacer element com estilo inline para flex-grow -->
             <div style="flex-grow: 1;"></div>
@@ -93,6 +97,28 @@
                 </div>
             </div>
             <br>
+              <div class="flex justify-center items-center mt-4 bg-gray-100">
+                <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
+                    <form action="{{ url_for('inserir_dominacao') }}" method="POST">
+                        <h4 class="text-2xl py-2 px-4">Adiciona dominacao sobre um planeta</h4>
+                        <br>
+                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nova_dominacao" placeholder="Nome do planeta dominado" required>
+                        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_11' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_11' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
+                    </form>
+                </div>
+            </div>
+            <br>         
             {% elif role == 'CIENTISTA' %}
             <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Cientista</h3>
             <div class="flex justify-center items-center mt-4 bg-gray-100">
