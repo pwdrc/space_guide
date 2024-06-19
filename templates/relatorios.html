@@ -52,6 +52,9 @@
         <!-- Relatório para Oficial -->
         {% if role == 'OFICIAL' %}
         <h2 class="text-2xl font-bold text-center py-2 mb-4 mt-4">Relatório para Oficial</h2>
+        <div>
+            <button onclick="exportTableToCSV('tabela-comunidades', 'comunidades.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        
+        </div>
         <table class="table-auto border-collapse w-full mb-8">
             <thead>
                 <tr class="bg-blue-700 text-white">
@@ -62,12 +65,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for habitante in habitantes %}
+                {% for habitante in habitacoes %}
                 <tr class="bg-white">
-                    <td class="border border-blue-600 py-2">{{ habitante.Planeta }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.Comunidade }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.QTD_Habitantes }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.Data_Ini }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ habitante.Planeta }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ habitante.Comunidade }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ habitante.QTD_Habitantes }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ habitante.Data_Ini }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -150,13 +153,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for planeta in planetas %}
+                {% for estrela in estrelas_sem_classificacao %}
                 <tr class="bg-white">
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Estrela }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Massa }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.X }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Y }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Z }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ estrela.ID_Estrela }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ estrela.Massa }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ estrela.X }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ estrela.Y }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ estrela.Z }}</td>
                 </tr>
                 {% endfor %}
         </tbody>
@@ -175,7 +178,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for planeta in planetas %}
+                {% for planeta in planetas_sem_classificacao %}
                 <tr class="bg-white">
                     <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Astro }}</td>
                     <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Massa }}</td>
