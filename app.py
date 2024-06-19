@@ -288,6 +288,18 @@ def criar_federacao():
     except Exception as e:
         flash('Erro ao realizar ação.', 'ERRO_7')
         return redirect(url_for('home'))
+    
+@app.route('/comandante/inserir_dominacao', methods=['POST'])
+@login_required
+def inserir_dominacao():
+    try:
+        nome = request.form['nova_dominacao']
+        action.add_dominancia(session.get('user_id'), nome)
+        flash('Ação realizada com sucesso!', 'SUCESSO_7')
+        return redirect(url_for('home'))
+    except Exception as e:
+        flash('Erro ao realizar ação.', 'ERRO_7')
+        return redirect(url_for('home'))
 
 # CRUD CIENTISTA para gerenciar estrelas
 # def add_estrela(self,ID,Nome,Classificao,Massa,X,Y,Z):
