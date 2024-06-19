@@ -1,82 +1,235 @@
-<!-- Relatórios
-Para cada tipo de usuário, deve ser possível gerar relatórios claros e informativos, pensando na
-utilidade de cada relatório para seus respectivos usuários finais. É interessante, por exemplo,
-aplicar alguma ordenação/agrupamento que faça sentido em cada um dos relatórios.
-1. Líder de facção:
-a. Informações sobre comunidades da própria facção: um líder de facção está
-interessado em recuperar informações sobre as comunidades participantes,
-facilitando a tomada de decisões de expansão da própria facção.
-i. Comunidades podem ser agrupadas por nação, espécie, planeta, e/ou
-sistema.
-2. Oficial:
-a. Informações de habitantes da própria nação: um Oficial está interessado em
-monitorar o crescimento populacional de sua nação. Sendo assim, é interessante
-para o usuário que o sistema gere relatórios com métricas interessantes sobre
-crescimento e deslocamento populacional.
-i. Habitantes podem ser monitorados com o uso da tabela Habitacao,
-podendo ser agrupados por facção, espécie, planeta, ou sistema.
-3. Comandante:
-a. Informações de planetas dominados por todas as nações: um comandante está
-interessado em informações de domínio tanto de sua quanto de outras nações.
-Sendo assim, comandantes têm acesso a relatórios sobre planetas dominados e de
-potencial dominação, contendo para cada planeta informações como: nação
-dominante (se houver), datas de início e fim da última dominação, quantidades de
-comunidades, espécies, habitantes, e facções presentes, facção majoritária (se
-houver), entre outros.
-i. Informações estratégicas importantes (a ser definido pelo grupo) devem estar
-disponíveis apenas para comandantes de suas respectivas nações, sendo
-ocultadas para demais comandantes na geração do relatório.
-ii. No mesmo relatório, comandantes devem poder ter acesso a informações
-sobre planetas com potencial de expansão de sua nação, i.e., planetas não
--errantes que não estão sendo dominados por outra nação. Esses planetas
-com potencial de dominação podem pertencer a um sistema em que a nação
-já está presente, ou a um sistema vizinho/próximo em que a nação não está
-presente . Podem ser adicionados, por exemplo, filtros de distância para
-encontrar planetas em sistemas próximos ao território da nação (obs: o
-território de uma nação é o conjunto de sistemas onde existem planetas
-dominados por ela) A Figura 1 ilustra o território da Nação X e as distâncias
-dos sistemas das estrelas Sirius e Barnand's Star. Dica: pode-se utilizar a
-distância Euclideana -->
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Relatórios</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    </head>
-    <body class="bg-gray-100">
-        <nav class="flex items-center bg-blue-700 mb-4">
-            <a href="/home" class="text-white font-bold py-2 px-4">Home</a>
-            <p class="text-xl text-white font-bold py-2 px-4">usuário: {{ name }}</p>
-            <!-- Spacer element com estilo inline para flex-grow -->
-            <div style="flex-grow: 1;"></div>
-            <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
-        </nav>
-        <div class="mb-4 mt-4">
-            <h1 class="text-3xl font-bold text-center py-2 mb-4">Relatórios</h1>
-            {% if role == 'LIDER_FACCAO' %}
-            <!-- apresentar relatórios numa tabela e dar a opcao de fazer o download no formato de planilha-->
-            <table class="table-auto border-collapse w-full">
-                <thead>
-                    <tr>
-                        <th class="border border-blue-600">Nação</th>
-                        <th class="border border-blue-600">Espécie</th>
-                        <th class="border border-blue-600">Planeta</th>
-                        <th class="border border-blue-600">Sistema</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for comunidade in comunidades %}
-                    <tr>
-                        <td class="border border-blue-600">{{ comunidade.nacao }}</td>
-                        <td class="border border-blue-600">{{ comunidade.especie }}</td>
-                        <td class="border border-blue-600">{{ comunidade.planeta }}</td>
-                        <td class="border border-blue-600">{{ comunidade.sistema }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {%endif%}
+<head>
+    <title>Relatórios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="bg-gray-100">
+    <nav class="flex items-center bg-blue-700 mb-4">
+        <a href="/home" class="text-white font-bold py-2 px-4">Home</a>
+        <p class="text-xl text-white font-bold py-2 px-4">Usuário: {{ name }}</p>
+        <div style="flex-grow: 1;"></div>
+        <a href="{{ url_for('logout') }}" class="bg-blue-700 text-white font-bold py-2 px-4">Logout</a>
+    </nav>
+
+    <div class="container mx-auto px-4 py-4">
+        <h1 class="text-3xl font-bold text-center py-2 mb-4">Relatórios</h1>
+
+        <!-- Relatório para Líder de Facção -->
+        {% if is_leader %}
+        <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Líder de Facção</h2>
+        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Comunidades</h3>
+        <div>
+            <button onclick="exportTableToCSV('tabela-comunidades', 'comunidades.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        </div>
+        <table id="tabela-comunidades" class="table-auto border-collapse w-full mb-8">
+            <thead>
+                <tr class="bg-blue-700 text-white">
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Planeta</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Comunidade</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Especie</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: right;">Número de Habitantes</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Nação</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Data de Início</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comunidade in comunidades %}
+                <tr class="bg-white">
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ comunidade.Planeta }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ comunidade.Comunidade }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ comunidade.Especie }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: right;">{{ comunidade.QTD_Habitantes }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ comunidade.Nacao }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ comunidade.Data_Ini }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <br>
+        
+        <!-- Relatório para Oficial -->
+        {% if role == 'OFICIAL' %}
+        <h2 class="text-2xl font-bold text-center py-2 mb-4 mt-4">Relatório para Oficial</h2>
+        <table class="table-auto border-collapse w-full mb-8">
+            <thead>
+                <tr class="bg-blue-700 text-white">
+                    <th class="border border-blue-600 py-2">Habitação</th>
+                    <th class="border border-blue-600 py-2">Espécie</th>
+                    <th class="border border-blue-600 py-2">Facção</th>
+                    <th class="border border-blue-600 py-2">Planeta</th>
+                    <th class="border border-blue-600 py-2">Sistema</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for habitante in habitantes %}
+                <tr class="bg-white">
+                    <td class="border border-blue-600 py-2">{{ habitante.habitacao }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.especie }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.faccao }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.planeta }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.sistema }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Relatório para Comandante -->
+        {% if role == 'COMANDANTE' %}
+        <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Comandante</h2>
+        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Nações</h3>
+        <div>
+            <button onclick="exportTableToCSV('tabela-nacoes', 'nacoes.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        
         </div>
-        </body>
-        </html>
+        <table id="tabela-nacoes" class="table-auto border-collapse w-full mb-8">
+            <thead>
+                <tr class="bg-blue-700 text-white">
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Planeta</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Espécie</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Inteligente</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Comunidade</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Habitantes</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Facção</th>
+                </tr>
+                </thead>
+            <tbody>
+                {% for nacao in nacoes %}
+                <tr class="bg-white">
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ nacao.Planeta }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ nacao.Especie }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ nacao.Inteligente }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ nacao.Comunidade }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: right;">{{ nacao.QTD_Habitantes }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ nacao.Faccao }}</td>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <br>
+
+        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Planetas Potenciais</h3>
+        <div>
+            <button onclick="exportTableToCSV('tabela-planetas-comandante', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
+        </div>
+        <table id="tabela-planetas-comandante" class="table-auto border-collapse w-full mb-8">
+            <thead>
+                <tr class="bg-blue-700 text-white">
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">ID</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Raio</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Habitações</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Distância</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for planeta in planetas %}
+                <tr class="bg-white">
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Astro }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Raio }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Habitacoes }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Dist_Nacao }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        {% endif %}
+        <br>
+        <!-- Relatório para CIENTISTA -->
+        {% if role == 'CIENTISTA' %}
+        <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Cientista</h2>
+        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Planetas Potenciais</h3>
+        <div>
+            <button onclick="exportTableToCSV('tabela-planetas-cientista', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
+        </div>
+        <table id="tabela-planetas-cientista" class="table-auto border-collapse w-full mb-8">
+            <thead>
+                <tr class="bg-blue-700 text-white">
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">ID</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Massa</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">X</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Y</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Z</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for planeta in planetas %}
+                <tr class="bg-white">
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Estrela }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Massa }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.X }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Y }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Z }}</td>
+                </tr>
+                {% endfor %}
+        </tbody>
+        </table>
+        <br>
+        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Planetas Sem Classificação</h3>
+        <div>
+            <button onclick="exportTableToCSV('tabela-planetas-sem-classificacao', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
+        </div>
+        <table id="tabela-planetas-sem-classificacao" class="table-auto border-collapse w-full mb-8">
+            <thead>
+                <tr class="bg-blue-700 text-white">
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">ID</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Massa</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Raio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for planeta in planetas %}
+                <tr class="bg-white">
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Astro }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Massa }}</td>
+                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Raio }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        {% endif %}
+    </div>
+    <script>
+        function downloadCSV(csv, filename) {
+            var csvFile;
+            var downloadLink;
+    
+            // Cria um arquivo CSV
+            csvFile = new Blob([csv], { type: "text/csv" });
+    
+            // Cria um link para download
+            downloadLink = document.createElement("a");
+    
+            // Define o nome do arquivo
+            downloadLink.download = filename;
+    
+            // Cria um link para o arquivo
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+    
+            // Esconde o link de download
+            downloadLink.style.display = "none";
+    
+            // Adiciona o link ao DOM
+            document.body.appendChild(downloadLink);
+    
+            // Clica no link de download
+            downloadLink.click();
+        }
+    
+        function exportTableToCSV(tableId, filename) {
+            var csv = [];
+            var rows = document.querySelectorAll("#" + tableId + " tr");
+            
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("td, th");
+                
+                for (var j = 0; j < cols.length; j++) 
+                    row.push(cols[j].innerText);
+                
+                csv.push(row.join(","));        
+            }
+    
+            // Baixa o arquivo CSV
+            downloadCSV(csv.join("\n"), filename);
+        }
+    </script>
+</body>
+</html>

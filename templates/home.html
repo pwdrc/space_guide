@@ -1,21 +1,3 @@
-<!-- Para cada tipo de usuário, deve ser possível realizar diferentes tarefas/funcionalidades. As
-funcionalidades são:
-1. Líder de facção:
-a. Gerenciar aspectos da própria facção da qual é líder:
-i. Alterar nome da facção
-ii. Indicar novo líder (Dica: quando um novo líder assume a facção, o líder
-anterior deve perder o acesso à funcionalidade)
-iii. Credenciar comunidades novas (Participa), que habitem planetas
-dominados por nações onde a facção está presente/credenciada
-b. Remover facção de Nação (NacaoFacao)
-2. Oficial: Não pode alterar nada na base. Apenas visualizar seus relatórios e overview.
-3. Comandante:
-a. Pode alterar aspectos da própria nação:
-i. Incluir/excluir a própria nação de uma federação existente
-ii. Criar nova federação, com a própria nação
-b. Insere nova dominância de um planeta que não está sendo dominado por ninguém
-4. Cientista:
-a. Gerenciar (CRUD) estrelas -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -51,6 +33,17 @@ a. Gerenciar (CRUD) estrelas -->
                         <br>
                         <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="add_federacao" placeholder="Nome da federação" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_5' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_5' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -60,8 +53,20 @@ a. Gerenciar (CRUD) estrelas -->
                     <form action="{{ url_for('rm_nacao_federacao') }}" method="POST">
                         <h4 class="text-2xl py-2 px-4">Excluir {{ nacao }} de uma federação</h4>
                         <br>
-                        <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="rm_federacao" placeholder="Nome da federação" required>
+                        <p class="text-lg py-2 px-4">Para excluir sua nação da federação, digite "EXCLUIR" e clique em "ENVIAR".</p>
+                        <input class="bg-gray-100 py-2 px-4 mb-4" type="text" name="rm_federacao" placeholder="EXCLUIR" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_6' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_6' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
@@ -73,20 +78,21 @@ a. Gerenciar (CRUD) estrelas -->
                         <br>
                         <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nova_federacao" placeholder="Nome da nova federacao" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_7' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_7' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
             <br>
-            <div class="flex justify-center items-center mt-4 bg-gray-100">
-                <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                    <form action="{{ url_for('add_dominancia') }}" method="POST">
-                        <h4 class="text-2xl py-2 px-4">Inserir nova dominância</h4>
-                        <br>
-                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="planeta" placeholder="Nome do planeta" required>
-                        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
-                    </form>
-                </div>
-            </div>
             {% elif role == 'CIENTISTA' %}
             <h3 class="text-3xl text-center font-bold py-2 mb-4">Painel do Cientista</h3>
             <div class="flex justify-center items-center mt-4 bg-gray-100">
@@ -94,37 +100,76 @@ a. Gerenciar (CRUD) estrelas -->
                     <form action="{{ url_for('add_estrela') }}" method="POST">
                         <h4 class="text-2xl py-2 px-4">Adicionar estrela</h4>
                         <br>
-                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nome" placeholder="Nome da estrela" required>
-                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="tipo" placeholder="Tipo da estrela" required>
-                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="idade" placeholder="Idade da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="ID" placeholder="ID" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="nome" placeholder="Nome da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="classificacao" placeholder="Classificacao" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="massa" placeholder="Massa" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="X" placeholder="X" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="Y" placeholder="Y" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="Z" placeholder="Z" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_8' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_8' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
             <br>
             <div class="flex justify-center items-center mt-4 bg-gray-100">
                 <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                    <form action="{{ url_for('rm_estrela') }}" method="POST">
-                        <h4 class="text-2xl py-2 px-4">Remover estrela</h4>
+                    <form action="{{ url_for('add_sistema') }}" method="POST">
+                        <h4 class="text-2xl py-2 px-4">Adicionar sistema</h4>
                         <br>
-                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nome" placeholder="Nome da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="estrela" placeholder="Nome da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="sistema" placeholder="Nome do sistema" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_9' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_9' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
             </div>
             <br>
             <div class="flex justify-center items-center mt-4 bg-gray-100">
                 <div class="bg-white p-10 w-96 rounded-lg shadow-lg">
-                    <form action="{{ url_for('update_estrela') }}" method="POST">
-                        <h4 class="text-2xl py-2 px-4">Atualizar estrela</h4>
+                    <form action="{{ url_for('add_orbita_estrela') }}" method="POST">
+                        <h4 class="text-2xl py-2 px-4">Adicionar órbita</h4>
                         <br>
-                        <input class="bg-gray-100 py-2 px-4 flex" type="text" name="nome" placeholder="Nome da estrela" required>
-                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="tipo" placeholder="Tipo da estrela" required>
-                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="idade" placeholder="Idade da estrela" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="orbitante" placeholder="Nome do orbitante" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="orbitada" placeholder="Nome da orbitada" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="distancia_min" placeholder="Distância mínima" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="distancia_max" placeholder="Distância máxima" required>
+                        <input class="mt-4 bg-gray-100 py-2 px-4 flex" type="text" name="periodo" placeholder="Período" required>
                         <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Enviar</button>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                          {% if category == 'SUCESSO_10' %}
+                            <!-- Exibir mensagem de sucesso -->
+                            <div class="text-blue-500 font-bold">{{ message }}</div>
+                          {% elif category == 'ERRO_10' %}
+                            <!-- Exibir mensagem de erro -->
+                            <div class="text-red-500 font-bold">{{ message }}</div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endwith %}
                     </form>
                 </div>
-            </div>
             {% endif %}
         </div>
     </body>
