@@ -135,12 +135,14 @@ def relatorios():
     is_leader = session.get('is_leader', False)
 
     # comunidades = action.get_comunidades_by_faccao(session.get('faccao')) if is_leader else []
+    r_habitacoes = action.relatorio_habitacao(session.get('user_id')) if user_role == 'OFICIAL' else []
     r_comunidades = action.relatorio_comunidades(session.get('user_id')) if is_leader else []
     r_nacoes = action.relatorio_nacoes(session.get('user_id')) if user_role == 'COMANDANTE' else []
     r_planetas_potenciais = action.relatorio_planetas_potenciais(session.get('user_id'), 100) if user_role == 'COMANDANTE' else []
     r_estrelas_sem_classificacao = action.relatorio_estrela_sem_classificacao if user_role == 'CIENTISTA' else []
     r_planetas_sem_classificacao = action.relatorio_planeta_sem_classificacao if user_role == 'CIENTISTA' else []
 
+    print(f">>>>> Relatório de Habitacoes: {r_habitacoes}")
     print(f">>>>> Relatório de comunidades: {r_comunidades}")
     print(f">>>>> Relatório de nações: {r_nacoes}")
     print(f">>>>> Relatório de planetas potenciais: {r_planetas_potenciais}")
@@ -153,6 +155,7 @@ def relatorios():
         is_leader=is_leader,
         role=user_role,
         name=user_name,
+        habitacoes=r_habitacoes,
         comunidades=r_comunidades,
         nacoes=r_nacoes,
         planetas_potenciais=r_planetas_potenciais,

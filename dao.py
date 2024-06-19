@@ -318,12 +318,12 @@ class DataBaseActions:
     #             return error_obj.message 
     def Relatorio_Nacoes_Participa(self, userid):
         with self.connection.cursor() as cursor:
-            Faccao = self.get_faccao_by_userid(userid)
+            Nacao = self.get_nacao_by_userid(userid)
             chunk_size = 100
             query = 'Comandante.recupera_informacoes'
             try:
                 cursor.callproc("dbms_output.enable")
-                cursor.callproc(query, (Faccao,))
+                cursor.callproc(query, (Nacao,))
 
                 lines_var = cursor.arrayvar(str, chunk_size)
                 num_lines_var = cursor.var(int)

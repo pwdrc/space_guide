@@ -55,21 +55,19 @@
         <table class="table-auto border-collapse w-full mb-8">
             <thead>
                 <tr class="bg-blue-700 text-white">
-                    <th class="border border-blue-600 py-2">Habitação</th>
-                    <th class="border border-blue-600 py-2">Espécie</th>
-                    <th class="border border-blue-600 py-2">Facção</th>
                     <th class="border border-blue-600 py-2">Planeta</th>
-                    <th class="border border-blue-600 py-2">Sistema</th>
+                    <th class="border border-blue-600 py-2">Comunidade</th>
+                    <th class="border border-blue-600 py-2">Número de Habitantes</th>
+                    <th class="border border-blue-600 py-2">Data de Início</th>
                 </tr>
             </thead>
             <tbody>
                 {% for habitante in habitantes %}
                 <tr class="bg-white">
-                    <td class="border border-blue-600 py-2">{{ habitante.habitacao }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.especie }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.faccao }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.planeta }}</td>
-                    <td class="border border-blue-600 py-2">{{ habitante.sistema }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.Planeta }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.Comunidade }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.QTD_Habitantes }}</td>
+                    <td class="border border-blue-600 py-2">{{ habitante.Data_Ini }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -91,7 +89,7 @@
                     <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Inteligente</th>
                     <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Comunidade</th>
                     <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Habitantes</th>
-                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Facção</th>
+                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Faccao</th>
                 </tr>
                 </thead>
             <tbody>
@@ -123,7 +121,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for planeta in planetas %}
+                {% for planeta in planetas_potenciais %}
                 <tr class="bg-white">
                     <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Astro }}</td>
                     <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Raio }}</td>
@@ -137,7 +135,7 @@
         <!-- Relatório para CIENTISTA -->
         {% if role == 'CIENTISTA' %}
         <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Cientista</h2>
-        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Planetas Potenciais</h3>
+        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Estrelas sem Classificação</h3>
         <div>
             <button onclick="exportTableToCSV('tabela-planetas-cientista', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
         </div>

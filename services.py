@@ -92,6 +92,9 @@ class SpaceGuideServices:
     def relatorio_comunidades(self, userid):
         return self.service.Relatorio_Comunidades(userid)
     
+    def relatorio_habitacao(self,userid):
+        return self.service.Relatorio_Habitacao(userid)
+    
     #########################################################
     # COMANDANTE
     #########################################################
