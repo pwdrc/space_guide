@@ -17,8 +17,8 @@
 
         <!-- Relatório para Líder de Facção -->
         {% if is_leader %}
-        <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Líder de Facção</h2>
-        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Comunidades</h3>
+        <h2 class="text-2xl font-bold text-center py-2 mt-4">Relatório para Líder de Facção</h2>
+        <h3 class="text-2xl text-center py-2 mt-4">Relação de Comunidades</h3>
         <div>
             <button onclick="exportTableToCSV('tabela-comunidades', 'comunidades.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        </div>
         <table id="tabela-comunidades" class="table-auto border-collapse w-full mb-8">
@@ -51,11 +51,12 @@
         
         <!-- Relatório para Oficial -->
         {% if role == 'OFICIAL' %}
-        <h2 class="text-2xl font-bold text-center py-2 mb-4 mt-4">Relatório para Oficial</h2>
+        <h2 class="text-2xl font-bold text-center py-2 mt-4 mt-4">Relatório para Oficial</h2>
+        <h3 class="text-2xl text-center py-2 mt-4">Relação de Habitantes</h3>
         <div>
-            <button onclick="exportTableToCSV('tabela-comunidades', 'comunidades.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        
+            <button onclick="exportTableToCSV('tabela-h-o', 'habitacoes.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        
         </div>
-        <table class="table-auto border-collapse w-full mb-8">
+        <table id="tabela-h-o" class="table-auto border-collapse w-full mb-8">
             <thead>
                 <tr class="bg-blue-700 text-white">
                     <th class="border border-blue-600 py-2">Planeta</th>
@@ -79,8 +80,8 @@
 
         <!-- Relatório para Comandante -->
         {% if role == 'COMANDANTE' %}
-        <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Comandante</h2>
-        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Nações</h3>
+        <h2 class="text-2xl font-bold text-center py-2 mt-4">Relatório para Comandante</h2>
+        <h3 class="text-2xl text-center py-2 mt-4">Relação de Nações</h3>
         <div>
             <button onclick="exportTableToCSV('tabela-nacoes', 'nacoes.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>        
         </div>
@@ -110,35 +111,37 @@
         
         <br>
 
-        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Planetas Potenciais</h3>
+        <h3 class="text-2xl text-center py-2 mt-4">Relação de Planetas Potenciais</h3>
+        <h2 class="text-lg text-center py-2 mt-4">Distância Máxima Relevante: 100</h2>    
         <div>
             <button onclick="exportTableToCSV('tabela-planetas-comandante', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
-        </div>
+        </div>    
         <table id="tabela-planetas-comandante" class="table-auto border-collapse w-full mb-8">
             <thead>
                 <tr class="bg-blue-700 text-white">
-                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">ID</th>
-                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Raio</th>
-                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Habitações</th>
-                    <th class="border border-blue-600 py-2 text-center" style="text-align: center;">Distância</th>
+                    <th class="border border-blue-600 py-2 text-center">ID</th>
+                    <th class="border border-blue-600 py-2 text-center">Raio</th>
+                    <th class="border border-blue-600 py-2 text-center">Habitações</th>
+                    <th class="border border-blue-600 py-2 text-center">Distância</th>
                 </tr>
             </thead>
             <tbody>
                 {% for planeta in planetas_potenciais %}
                 <tr class="bg-white">
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.ID_Astro }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Raio }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Habitacoes }}</td>
-                    <td class="border border-blue-600 py-2" style="text-align: center;">{{ planeta.Dist_Nacao }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ planeta.ID_Astro }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ planeta.Raio }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ planeta.Habitacoes }}</td>
+                    <td class="border border-blue-600 py-2 text-center">{{ planeta.Dist_Nacao }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
+        </table>
         {% endif %}
         <br>
         <!-- Relatório para CIENTISTA -->
         {% if role == 'CIENTISTA' %}
-        <h2 class="text-2xl font-bold text-center py-2 mb-4">Relatório para Cientista</h2>
-        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Estrelas sem Classificação</h3>
+        <h2 class="text-2xl font-bold text-center py-2 mt-4">Relatório para Cientista</h2>
+        <h3 class="text-2xl text-center py-2 mt-4">Relação de Estrelas sem Classificação</h3>
         <div>
             <button onclick="exportTableToCSV('tabela-planetas-cientista', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
         </div>
@@ -165,7 +168,7 @@
         </tbody>
         </table>
         <br>
-        <h3 class="text-2xl font-bold text-center py-2 mb-4">Relação de Planetas Sem Classificação</h3>
+        <h3 class="text-2xl text-center py-2 mb-4">Relação de Planetas Sem Classificação</h3>
         <div>
             <button onclick="exportTableToCSV('tabela-planetas-sem-classificacao', 'planetas.csv')" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded">Exportar para CSV</button>
         </div>
@@ -231,6 +234,7 @@
             // Baixa o arquivo CSV
             downloadCSV(csv.join("\n"), filename);
         }
+
     </script>
 </body>
 </html>
